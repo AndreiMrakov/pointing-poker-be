@@ -2,7 +2,6 @@
   "name": "pointing-poker-be",
   "version": "1.0.0",
   "repository": "https://github.com/AndreiMrakov/pointing-poker-be.git",
-  "author": "Andrei Kaptsiuh <kaptsiuhandrei@gmail.com>",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
