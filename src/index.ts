@@ -1,11 +1,12 @@
 require('dotenv').config();
 import express from 'express';
-const morgan = require('morgan');
+import morgan from 'morgan';
 
 const PORT = process.env.PORT || 3000;
+const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
 const app = express();
-app.use(morgan(process.env.LOG_LEVEL));
+app.use(morgan(LOG_LEVEL));
 
 app.get('/', (req, res) => {
     res.send('Hello from Express');
