@@ -9,14 +9,6 @@ const LOG_LEVEL = process.env.LOG_LEVEL as string;
 const PORT = process.env.PORT;
 
 const app = express();
-app.use(function (req, res, next) {
-  res.header(
-    'Access-Control-Allow-Origin',
-    'https://www.differentServerDomain.fr https://www.differentServerDomain.fr'
-  );
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
 
 app.get('/', (req, res) => {
   res.send('Hello from Express');
