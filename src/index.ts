@@ -32,4 +32,4 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => console.log(`Socket-server started at localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
