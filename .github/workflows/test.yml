@@ -1,0 +1,25 @@
+name: Test for BE
+
+on:
+  push:
+    branches-ignore: [develop, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Pull branch
+      - name: Install dependencies
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: install
+      - name: Checking test
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: test -- --passWithNoTests
