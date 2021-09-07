@@ -5,7 +5,7 @@ module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/*.test.ts', '**/src/*.test.ts'],
   moduleNameMapper: {
-    '^@Src/(.*)$': '<rootDir>/src/$1',
+    '^@src/(.*)$': '<rootDir>/src/$1',
   },
   preset: 'ts-jest',
 };
