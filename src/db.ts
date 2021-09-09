@@ -1,12 +1,12 @@
 import { Dialect, Sequelize } from 'sequelize';
 
 export const sequlize =  new Sequelize(
-  "pointing_poker",
-  "postgres",
-  "root",
+  String(process.env.DB_NAME),
+  String(process.env.DB_USER),
+  String(process.env.DB_PASSWORD),
   {
-    dialect: "postgres" as Dialect,
-    host: "localhost",
-    port: 5432,
+    dialect: process.env.DB_CONNECT as Dialect,
+    host: String(process.env.DB_HOST),
+    port: Number(process.env.DB_PORT),
   }
 );
