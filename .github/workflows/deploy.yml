@@ -35,4 +35,12 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
           heroku_email: ${{secrets.HEROKU_APP_EMAIL}}
-          procfile: "web: yarn start"
+      - name: Update DB on Heroku
+        run: heroku config:set
+          DB_CONNECT=${{ secrets.DB_CONNECT }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          -a ${{ secrets.HEROKU_APP_NAME }}
