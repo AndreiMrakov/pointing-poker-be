@@ -3,6 +3,9 @@ import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { sequelize } from './db';
+
+const models = require('./models');
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -31,5 +34,14 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
   });
 });
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+  } catch(e) {
+     console.log(e);
+  }
+})();
 
 server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
