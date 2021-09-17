@@ -3,9 +3,8 @@ import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { sequelize } from './db';
-
-const models = require('./models');
+import { sequelize } from './db/models';
+import { RoleSeed, RoomStateSeed } from './db/seeders';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -39,9 +38,10 @@ io.on('connection', (socket) => {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
+    await RoomStateSeed();
+    await RoleSeed();
+    server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
   } catch(e) {
      console.log(e);
   }
 })();
-
-server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));

@@ -1,7 +1,7 @@
 import { sequelize } from "../db";
 import { DataTypes } from "sequelize";
 
-export const Role = sequelize.define('role', {
+export const RoomState = sequelize.define('room_state', {
   id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-  name: {type: DataTypes.STRING},
+  title: {type: DataTypes.STRING, allowNull: false},
 });
