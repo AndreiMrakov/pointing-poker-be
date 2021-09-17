@@ -5,10 +5,11 @@ export const UserScore = sequelize.define('user_score', {
   id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
   score: DataTypes.INTEGER,
 }, {
+  underscored: true,
   indexes: [
     {
       unique: true,
-      fields: ['userId', 'taskId']
+      fields: ['user_id', 'task_id']
     }
   ]
 });

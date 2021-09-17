@@ -7,5 +7,7 @@ export const Task = sequelize.define('task', {
   body: DataTypes.TEXT,
   score: DataTypes.INTEGER,
   avg_score: DataTypes.FLOAT,
-  isActive: {type: DataTypes.BOOLEAN, defaultValue: false},
+  is_active: {type: DataTypes.BOOLEAN, defaultValue: false},
+}, {
+  underscored: true,
 });

@@ -8,5 +8,7 @@ export const User = sequelize.define('user', {
   job: DataTypes.STRING,
   avatar: DataTypes.STRING,
   score: DataTypes.STRING,
-  isAccess: {type: DataTypes.BOOLEAN, defaultValue: false},
+  is_access: {type: DataTypes.BOOLEAN, defaultValue: false},
+}, {
+  underscored: true,
 });
