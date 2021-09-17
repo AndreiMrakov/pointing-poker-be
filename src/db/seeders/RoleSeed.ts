@@ -16,7 +16,7 @@ export const RoleSeed = async () => {
   await Role.findOrCreate({
     where: { id: 3 },
     defaults: {
-        title: 'guest',
+        title: 'spectator',
       }
   });
 };
