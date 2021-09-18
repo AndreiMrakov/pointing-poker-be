@@ -3,6 +3,8 @@ import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { sequelize } from './db/models';
+import { runAllSeeds } from './db/seeders';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -32,4 +34,13 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
+(async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+    await runAllSeeds();
+    server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
+  } catch(e) {
+     console.log(e);
+  }
+})();
