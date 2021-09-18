@@ -1,22 +1,14 @@
 import { RoomState } from "../models/RoomState";
 
+const states = ['beginning', 'progress', 'finished'];
+
 export const RoomStateSeed = async () => {
-  await RoomState.findOrCreate({
-    where: { id: 1 },
-    defaults: {
-        title: 'beginning',
-      },
-  });
-  await RoomState.findOrCreate({
-    where: { id: 2 },
-    defaults: {
-        title: 'progress',
-      },
-  });
-  await RoomState.findOrCreate({
-    where: { id: 3 },
-    defaults: {
-        title: 'finished',
-      }
-  });
+  Promise.all(
+    states.map((state) => RoomState.findOrCreate({
+      where: { title: state },
+      defaults: {
+          title: state,
+        },
+    }))
+  );
 };
