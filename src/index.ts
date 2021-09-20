@@ -3,8 +3,8 @@ import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { sequelize } from './db/models';
-import { runAllSeeds } from './db/seeders';
+import { sequelize } from './models';
+import { runAllSeeds } from './seeders';
 import { router } from './routers';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
