@@ -1,21 +1,20 @@
-import { sequelize } from "../db";
+import { sequelize } from "../db/db";
 import { DataTypes } from "sequelize";
 
-export const UserScore = sequelize.define('user_score', {
+export const UserRoomRole = sequelize.define('user_room_role', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  score: DataTypes.INTEGER,
 }, {
   underscored: true,
   indexes: [
     {
       unique: true,
       fields: [
+        'room_id',
         'user_id',
-        'task_id',
       ],
     }
   ]

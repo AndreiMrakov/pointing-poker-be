@@ -1,6 +1,5 @@
-import { sequelize } from "../db";
+import { sequelize } from "../db/db";
 import { DataTypes } from "sequelize";
-import { UserScore } from "./UserScore";
 
 export const Task = sequelize.define('task', {
   id: {
@@ -18,10 +17,8 @@ export const Task = sequelize.define('task', {
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-  },
+  }
 }, {
   underscored: true,
 });
 
-Task.hasMany(UserScore);
-UserScore.belongsTo(Task);

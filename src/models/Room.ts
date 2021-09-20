@@ -1,4 +1,4 @@
-import { sequelize } from "../db";
+import { sequelize } from "../db/db";
 import { DataTypes, UUIDV4 } from "sequelize";
 
 export const Room = sequelize.define('room', {

@@ -1,14 +1,14 @@
-import { sequelize } from "../db";
+import { sequelize } from "../db/db";
 import { DataTypes } from "sequelize";
 
-export const Message = sequelize.define('message', {
+export const RoomState = sequelize.define('room_state', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  text: {
-    type: DataTypes.TEXT,
+  title: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 }, {
