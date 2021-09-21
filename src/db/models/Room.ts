@@ -7,11 +7,6 @@ export const Room = sequelize.define('room', {
     primaryKey: true,
     autoIncrement: true,
   },
-  uuid: {
-    type: DataTypes.UUID,
-    primaryKey: true,
-    allowNull: true,
-  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,

@@ -4,9 +4,9 @@ import { roomService } from '@src/services/RoomService';
 class RoomController {
 
   async createRoom(req: Request, res: Response) {
-    const { id, uuid, title } = req.body;
+    const { id, title } = req.body;
 
-    const tasks = await roomService.createRoom(id, uuid, title);
+    const tasks = await roomService.createRoom(id, title);
 
     res.json(tasks);
   }

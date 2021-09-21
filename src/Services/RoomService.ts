@@ -4,11 +4,10 @@ import { AbstractDataTypeConstructor } from 'sequelize/types';
 
 class RoomService {
 
-  async createRoom(id: number, uuid: AbstractDataTypeConstructor, title: string) {
+  async createRoom(id: number, title: string) {
     try {
       await Room.create({
         id,
-        uuid,
         title,
       });
 
