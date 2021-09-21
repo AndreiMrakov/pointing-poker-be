@@ -1,2 +1,2 @@
 import './relation';
-export { sequelize } from '../db/db';
+export { sequelize } from '../db';
