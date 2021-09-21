@@ -1,3 +1,4 @@
+import { SocketEvent } from "@src/utils/enums/SocketEvent";
 import { io } from "../index";
 import { Task } from "../models/Task";
 
@@ -26,7 +27,7 @@ class TaskService {
       });
       const tasks = await this.getAllTasks(roomId);
 
-      io.emit('task:create', {tasks});
+      io.emit(SocketEvent.TaskCreat, {tasks});
 
       return tasks;
     } catch(e) {
@@ -44,7 +45,7 @@ class TaskService {
       );
       const tasks = await this.getAllTasks(roomId);
 
-      io.emit('task:set-score', {tasks});
+      io.emit(SocketEvent.TaskUpdateScore, {tasks});
 
       return tasks;
     } catch(e) {
@@ -71,7 +72,7 @@ class TaskService {
       );
       const tasks = await this.getAllTasks(roomId);
 
-      io.emit('task:set-active', {tasks});
+      io.emit(SocketEvent.TaskUpdateActive, {tasks});
 
       return tasks;
     } catch(e) {
@@ -84,7 +85,7 @@ class TaskService {
       await Task.destroy({
         where: { id },
       });
-      io.emit('task:delete', {id});
+      io.emit(SocketEvent.TaskDelete, {id});
       return true;
     } catch(e) {
       console.log(`Error destroy Task id=${id}: `, e);
