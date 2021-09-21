@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+import { roomService } from '@src/services/RoomService';
 
-class RoomService {
+class RoomController {
 
   async createRoom() {
 
@@ -19,4 +20,4 @@ class RoomService {
   }
 };
 
-export const roomService = new RoomService();
+export const roomController = new RoomController();

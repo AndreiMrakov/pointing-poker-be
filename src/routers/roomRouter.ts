@@ -1,4 +1,4 @@
-import { roomService } from '@src/Services/RoomService';
+import { roomService } from '@src/services/RoomService';
 import Router from 'express';
 
 export const roomRouter = Router();
