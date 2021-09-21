@@ -1,4 +1,4 @@
-import { SocketEvent } from "@src/utils/enums/SocketEvent";
+import { SocketEvent } from "../utils/enums/SocketEvent";
 import { io } from "../index";
 import { Task } from "../models/Task";
 
