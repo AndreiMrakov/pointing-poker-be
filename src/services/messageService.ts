@@ -9,8 +9,8 @@ class MessageService {
     return messages;
   }
 
-  async createMessage(text: string, roomId: string) {
-    await Message.create({text, roomId});
+  async createMessage(text: string, roomId: string, userId: number) {
+    await Message.create({text, roomId, userId});
 
     return await this.getAllMessages(roomId);
   }
