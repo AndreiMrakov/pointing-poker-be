@@ -1,3 +1,4 @@
+import { io } from "../index";
 import { Task } from "../models/Task";
 
 class TaskService {
@@ -23,8 +24,11 @@ class TaskService {
         roomId,
         is_active,
       });
+      const tasks = await this.getAllTasks(roomId);
 
-      return await this.getAllTasks(roomId);
+      io.emit('task:create', {tasks});
+
+      return tasks;
     } catch(e) {
       console.log(`Error create Task title=${title}: `, e);
     }
@@ -38,8 +42,11 @@ class TaskService {
           where: { id },
         }
       );
-      
-      return await this.getAllTasks(roomId);
+      const tasks = await this.getAllTasks(roomId);
+
+      io.emit('task:set-score', {tasks});
+
+      return tasks;
     } catch(e) {
       console.log(`Error update Task id=${id}: `, e);
     }
@@ -62,8 +69,11 @@ class TaskService {
           where: { id },
         }
       );
+      const tasks = await this.getAllTasks(roomId);
 
-      return await this.getAllTasks(roomId);
+      io.emit('task:set-active', {tasks});
+
+      return tasks;
     } catch(e) {
       console.log(`Error update Task id=${id}: `, e);
     }
@@ -74,6 +84,7 @@ class TaskService {
       await Task.destroy({
         where: { id },
       });
+      io.emit('task:delete', {id});
       return true;
     } catch(e) {
       console.log(`Error destroy Task id=${id}: `, e);

@@ -23,7 +23,7 @@ app.use(express.json());
 app.use('/api', router);
 
 const server = createServer(app);
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: '*',
     methods: ['GET'],
