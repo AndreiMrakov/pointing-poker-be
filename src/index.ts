@@ -5,6 +5,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from './db/models';
 import { runAllSeeds } from './db/seeders';
+import { router } from './routers';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -17,12 +18,13 @@ app.get('/', (req, res) => {
 });
 
 app.use(morgan(LOG_LEVEL));
+app.use(express.json());
+app.use('/api', router);
 
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
-    methods: ['GET'],
   },
 });
 
