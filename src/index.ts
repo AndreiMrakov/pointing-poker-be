@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
 
   socket.on('getMessages', async (roomId: string) => {
     const response = await messageService.getAllMessages(roomId);
-    io.emit('sendMessages', JSON.stringify(response));
+    io.to(roomId).emit('sendMessages', JSON.stringify(response));
   });
 
   socket.on('disconnect', () => {
