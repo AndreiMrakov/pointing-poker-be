@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { sequelize } from './db/models';
 import { runAllSeeds } from './db/seeders';
 import { router } from './routers';
+import { messageService } from './services';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -30,6 +31,11 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
+
+  socket.on('getMessages', async (roomId: string) => {
+    const response = await messageService.getAllMessages(roomId);
+    io.emit('sendMessages', JSON.stringify(response));
+  });
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
