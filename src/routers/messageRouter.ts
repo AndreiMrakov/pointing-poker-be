@@ -3,4 +3,4 @@ import { Router } from 'express';
 
 export const messageRouter = Router();
 
-messageRouter.post('/', messageController.createMessage);
+messageRouter.get('/', messageController.getAllMessages);

@@ -2,12 +2,16 @@ import { messageService } from '../services/messageService';
 import {Request, Response} from 'express';
 
 class MessageController {
-  async createMessage(req: Request, res: Response) {
-    const { text, roomId, userId } = req.body;
+  async getAllMessages(req: Request, res: Response) {
+    try {
+      const { roomId } = req.query;
 
-    const messages = await messageService.createMessage(text, roomId, userId);
+      const messages = await messageService.getAllMessages(roomId as string);
 
-    res.json(messages);
+      res.json(messages);
+    } catch {
+      res.json('There are no messages in this room');
+    }
   }
 };
 

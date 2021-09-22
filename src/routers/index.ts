@@ -3,4 +3,4 @@ import { messageRouter } from './messageRouter';
 
 export const router = Router();
 
-router.use('/message', messageRouter)
+router.use('/messages', messageRouter)
