@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
 
   socket.on('addMessage', async(text: string, roomId: string, userId: number) => {
     const message = await messageService.createMessage(text, roomId, userId);
-    io.to(roomId).emit('sendMessage', message);
+    socket.to(roomId).emit('sendMessage', message);
   })
 
   socket.on('disconnect', () => {
