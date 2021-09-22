@@ -4,7 +4,7 @@ routes for FE:
 
 | route    | description          |
 | ------------- | -------------------- |
-| /api/message/    | get all messages from room    |
+| /api/messages?roomId=*    | get all messages from room *   |
 
 socket events:
 
