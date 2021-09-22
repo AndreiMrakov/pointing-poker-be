@@ -10,6 +10,9 @@ class MessageService {
   }
 
   async createMessage(text: string, roomId: string, userId: number) {
+    if(!text || !roomId || !userId) {
+      return('Invalid request');
+    }
     const message = await Message.create({text, roomId, userId});
 
     return message;
