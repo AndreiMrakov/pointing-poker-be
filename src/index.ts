@@ -6,6 +6,7 @@ import { sequelize } from './models';
 import { runAllSeeds } from './seeders';
 import { router } from './routers';
 import { createApplication } from './socket';
+import { errorHandling } from './middleware/ErrorHandlingMiddleware';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -21,6 +22,8 @@ app.get('/', (req, res) => {
 app.use(morgan(LOG_LEVEL));
 app.use(express.json());
 app.use('/api', router);
+
+app.use(errorHandling);
 
 const server = createServer(app);
 
