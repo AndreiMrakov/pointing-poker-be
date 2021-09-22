@@ -37,17 +37,17 @@ class TaskService {
 
   async setScoreTask(id: number, score: number, roomId: string) {
     try {
-      await Task.update(
+      const task = await Task.update(
         { score },
         {
           where: { id },
+          returning: true,
         }
       );
-      const tasks = await this.getAllTasks(roomId);
 
-      io.emit(SocketEvent.TaskUpdateScore, {tasks});
+      io.emit(SocketEvent.TaskUpdateScore, {task});
 
-      return tasks;
+      return task;
     } catch(e) {
       console.log(`Error update Task id=${id}: `, e);
     }
@@ -55,26 +55,27 @@ class TaskService {
 
   async setActiveTask(id: number, is_active: boolean, roomId: string) {
     try {
-      await Task.update(
+      const unActiveTask = await Task.update(
         { is_active: false },
         {
           where: {
             is_active: true,
             roomId: roomId,
           },
+          returning: true,
         }
       );
-      await Task.update(
+      const activeTask = await Task.update(
         { is_active },
         {
           where: { id },
+          returning: true,
         }
       );
-      const tasks = await this.getAllTasks(roomId);
 
-      io.emit(SocketEvent.TaskUpdateActive, {tasks});
+      io.emit(SocketEvent.TaskUpdateActive, {unActiveTask, activeTask});
 
-      return tasks;
+      return {unActiveTask, activeTask};
     } catch(e) {
       console.log(`Error update Task id=${id}: `, e);
     }
@@ -85,7 +86,7 @@ class TaskService {
       await Task.destroy({
         where: { id },
       });
-      io.emit(SocketEvent.TaskDelete, {id});
+      io.emit(SocketEvent.TaskDelete);
       return true;
     } catch(e) {
       console.log(`Error destroy Task id=${id}: `, e);
