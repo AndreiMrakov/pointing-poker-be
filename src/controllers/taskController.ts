@@ -1,7 +1,40 @@
+import { ServerEvent } from '../utils/enums/ServerEvent';
 import { Request, Response } from 'express';
 import { taskService } from '../services';
 
-class TaskController {
+export async function createTask(data: any) {
+  const { title, description, roomId } = data;
+  // @ts-ignore
+  const socket = this;
+  const task = await taskService.createTask(title, description, roomId);
+  socket.emit(ServerEvent.TaskCreated, {task});
+}
+
+export async function setScoreTask(data: any) {
+  const { id, score, roomId } = data;
+  // @ts-ignore
+  const socket = this;
+  const task = await taskService.setScoreTask(Number(id), score, roomId);
+  socket.emit(ServerEvent.TaskUpdatedScore, {task});
+}
+
+export async function setActiveTask(data: any) {
+  const { id, is_active, roomId } = data;
+  // @ts-ignore
+  const socket = this;
+  const tasks = await taskService.setActiveTask(Number(id), is_active, roomId);
+  socket.emit(ServerEvent.TaskUpdatedActive, {tasks});
+}
+
+export async function deleteTask(data: any) {
+  const { id } = data;
+  // @ts-ignore
+  const socket = this;
+  await taskService.deleteTask(Number(id)) && socket.emit(ServerEvent.TaskDeleted);
+}
+
+
+export class TaskController {  
   async getAllTasks(req: Request, res: Response) {
     const { roomId } = req.params;
 
@@ -9,38 +42,4 @@ class TaskController {
 
     res.json(tasks);
   }
-
-  async createTask(req: Request, res: Response) {
-    const { title, description, roomId } = req.body;
-
-    const tasks = await taskService.createTask(title, description, roomId);
-
-    res.json(tasks);
-  }
-
-  async setScoreTask(req: Request, res: Response) {
-    const { id } = req.params;
-    const { score, roomId } = req.body;
-    
-    const tasks = await taskService.setScoreTask(Number(id), score, roomId);
-
-    res.json(tasks);
-  }
-
-  async setActiveTask(req: Request, res: Response) {
-    const { id } = req.params;
-    const { is_active, roomId } = req.body;
-
-    const tasks = await taskService.setActiveTask(Number(id), is_active, roomId);
-
-    res.json(tasks);
-  }
-
-  async deleteTask(req: Request, res: Response) {
-    const { id } = req.params;
-    
-    await taskService.deleteTask(Number(id)) && res.status(200).json({message: 'ok'});
-  }
 }
-
-export const taskController = new TaskController();

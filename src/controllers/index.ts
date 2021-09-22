@@ -1,1 +1,7 @@
-export { taskController } from './TaskController';
+export {
+  TaskController,
+  createTask,
+  setScoreTask,
+  setActiveTask,
+  deleteTask,
+} from './TaskController';

@@ -1,5 +1,4 @@
-import { SocketEvent } from "../utils/enums/SocketEvent";
-import { io } from "../index";
+import { ServerEvent } from "../utils/enums/ServerEvent";
 import { Task } from "../models/Task";
 
 class TaskService {
@@ -19,17 +18,14 @@ class TaskService {
     const is_active = count === 0 ? true : false;
 
     try {
-      await Task.create({
+      const task = await Task.create({
         title,
         description,
         roomId,
         is_active,
       });
-      const tasks = await this.getAllTasks(roomId);
 
-      io.emit(SocketEvent.TaskCreat, {tasks});
-
-      return tasks;
+      return task;
     } catch(e) {
       console.log(`Error create Task title=${title}: `, e);
     }
@@ -44,8 +40,6 @@ class TaskService {
           returning: true,
         }
       );
-
-      io.emit(SocketEvent.TaskUpdateScore, {task});
 
       return task;
     } catch(e) {
@@ -73,8 +67,6 @@ class TaskService {
         }
       );
 
-      io.emit(SocketEvent.TaskUpdateActive, {unActiveTask, activeTask});
-
       return {unActiveTask, activeTask};
     } catch(e) {
       console.log(`Error update Task id=${id}: `, e);
@@ -86,7 +78,7 @@ class TaskService {
       await Task.destroy({
         where: { id },
       });
-      io.emit(SocketEvent.TaskDelete);
+
       return true;
     } catch(e) {
       console.log(`Error destroy Task id=${id}: `, e);
