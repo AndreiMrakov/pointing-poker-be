@@ -32,10 +32,10 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
-  socket.on('getMessages', async (roomId: string) => {
-    const response = await messageService.getAllMessages(roomId);
-    io.to(roomId).emit('sendMessages', JSON.stringify(response));
-  });
+  socket.on('addMessage', async(text: string, roomId: string, userId: number) => {
+    const message = await messageService.createMessage(text, roomId, userId);
+    io.to(roomId).emit('sendMessages', message);
+  })
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
