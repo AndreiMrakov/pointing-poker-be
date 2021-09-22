@@ -7,7 +7,7 @@ export async function createTask(data: any) {
   // @ts-ignore
   const socket = this;
   const task = await taskService.createTask(title, description, roomId);
-  socket.emit(ServerEvent.TaskCreated, {task});
+  socket.to(roomId).emit(ServerEvent.TaskCreated, {task});
 }
 
 export async function setScoreTask(data: any) {
@@ -15,7 +15,7 @@ export async function setScoreTask(data: any) {
   // @ts-ignore
   const socket = this;
   const task = await taskService.setScoreTask(Number(id), score, roomId);
-  socket.emit(ServerEvent.TaskUpdatedScore, {task});
+  socket.to(roomId).emit(ServerEvent.TaskUpdatedScore, {task});
 }
 
 export async function setActiveTask(data: any) {
@@ -23,7 +23,7 @@ export async function setActiveTask(data: any) {
   // @ts-ignore
   const socket = this;
   const tasks = await taskService.setActiveTask(Number(id), is_active, roomId);
-  socket.emit(ServerEvent.TaskUpdatedActive, {tasks});
+  socket.to(roomId).emit(ServerEvent.TaskUpdatedActive, {tasks});
 }
 
 export async function deleteTask(data: any) {
@@ -34,7 +34,7 @@ export async function deleteTask(data: any) {
 }
 
 export async function getAllTasks(req: Request, res: Response) {
-  const { roomId } = req.params;
-  const tasks = await taskService.getAllTasks(roomId);
+  const { room_id } = req.query;
+  const tasks = await taskService.getAllTasks(String(room_id));
   res.json(tasks);
 }

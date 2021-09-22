@@ -3,4 +3,4 @@ import { Router } from "express";
 
 export const routerTask = Router();
 
-routerTask.get('/:roomId', getAllTasks);
+routerTask.get('/', getAllTasks);
