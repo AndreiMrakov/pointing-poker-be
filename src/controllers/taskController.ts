@@ -33,13 +33,8 @@ export async function deleteTask(data: any) {
   await taskService.deleteTask(Number(id)) && socket.emit(ServerEvent.TaskDeleted);
 }
 
-
-export class TaskController {  
-  async getAllTasks(req: Request, res: Response) {
-    const { roomId } = req.params;
-
-    const tasks = await taskService.getAllTasks(roomId);
-
-    res.json(tasks);
-  }
+export async function getAllTasks(req: Request, res: Response) {
+  const { roomId } = req.params;
+  const tasks = await taskService.getAllTasks(roomId);
+  res.json(tasks);
 }

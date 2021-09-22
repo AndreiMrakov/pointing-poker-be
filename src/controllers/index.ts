@@ -1,5 +1,5 @@
 export {
-  TaskController,
+  getAllTasks,
   createTask,
   setScoreTask,
   setActiveTask,

@@ -1,6 +1,6 @@
-import { TaskController } from "../controllers";
+import { getAllTasks } from "../controllers";
 import { Router } from "express";
 
 export const routerTask = Router();
 
-routerTask.get('/:roomId', new TaskController().getAllTasks);
+routerTask.get('/:roomId', getAllTasks);
