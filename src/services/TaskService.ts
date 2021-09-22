@@ -1,4 +1,3 @@
-import { ServerEvent } from "../utils/enums/ServerEvent";
 import { Task } from "../models/Task";
 
 class TaskService {
@@ -11,13 +10,13 @@ class TaskService {
   }
 
   async createTask(title: string, description: string, roomId: string) {
-    const count = await Task.count({
-      where: { roomId }
-    });
-
-    const is_active = count === 0 ? true : false;
-
     try {
+      const count = await Task.count({
+        where: { roomId }
+      });
+
+      const is_active = count === 0 ? true : false;
+
       const task = await Task.create({
         title,
         description,
@@ -27,7 +26,7 @@ class TaskService {
 
       return task;
     } catch(e) {
-      console.log(`Error create Task title=${title}: `, e);
+      return `Task was not created. ${e}.`;
     }
   }
 
@@ -43,7 +42,7 @@ class TaskService {
 
       return task;
     } catch(e) {
-      console.log(`Error update Task id=${id}: `, e);
+      return `Task id=${id} was not updated. ${e}.`;
     }
   }
 
@@ -69,7 +68,7 @@ class TaskService {
 
       return {unActiveTask, activeTask};
     } catch(e) {
-      console.log(`Error update Task id=${id}: `, e);
+      return `Task id=${id} was not updated. ${e}.`;
     }
   }
 
@@ -81,7 +80,7 @@ class TaskService {
 
       return true;
     } catch(e) {
-      console.log(`Error destroy Task id=${id}: `, e);
+      return `Task id=${id} was not destroyed. ${e}.`;
     }
   }
 }
