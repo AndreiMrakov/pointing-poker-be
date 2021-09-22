@@ -29,7 +29,7 @@ createApplication(
   {
     cors: {
       origin: '*',
-      methods: ['GET'],
+      methods: ['GET', 'POST'],
     },
   },
 );
