@@ -1,4 +1,4 @@
-export class ApiError extends Error {
+export class HttpError extends Error {
   readonly status: number;
 
   constructor(status: number, message: string) {
@@ -8,10 +8,10 @@ export class ApiError extends Error {
   }
 
   static badRequest(message: string) {
-    return new ApiError(404, message);
+    return new HttpError(404, message);
   }
 
   static internal(message: string) {
-    return new ApiError(500, message);
+    return new HttpError(500, message);
   }
 }
