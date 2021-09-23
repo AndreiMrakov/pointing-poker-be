@@ -1,7 +1,8 @@
-import { Message } from '../db/models/Message';
+import { BaseError, HttpStatusCode } from '@/helpers';
+import { Message } from '@/db/models/Message';
 
 class MessageService {
-  async getAllMessages(roomId: string) {
+  async getMessagesByRoomId(roomId: string) {
     const messages = await Message.findAll({
       where: {roomId}
     });
@@ -11,7 +12,7 @@ class MessageService {
 
   async createMessage(text: string, roomId: string, userId: number) {
     if(!text || !roomId || !userId) {
-      return('Invalid request');
+      return(new BaseError('Bad request', HttpStatusCode.BAD_REQUEST));
     }
     const message = await Message.create({text, roomId, userId});
 
