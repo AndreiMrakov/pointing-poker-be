@@ -1,9 +1,34 @@
 import { RoomState } from "../models/RoomState";
 import { Room } from "../models/Room";
+import { UserScore } from "../models/UserScore";
 
 // states: ['beginning', 'progress', 'finished']
 
 class GameService {
+  async userVote(userId: number, taskId: number, score: number,) {
+    try {
+      const [userScore, created] = await UserScore.findOrCreate({
+        where: { userId, taskId },
+        defaults: {
+          score,
+        },
+      });
+      return created
+        ? userScore
+        : (
+          (await UserScore.update(
+            { score },
+            {
+              where: { id: userScore.get().id },
+              returning: true,
+            }
+          ))[1][0]
+        );   
+    } catch(e) {
+      return `UserScore was not created / updated. ${e}.`;
+    }
+  }
+
   async setStartGame(id: string) {
     const stateId = await this.getIdStateRoom("progress");
     return await this.updateRoomGame(id, stateId);

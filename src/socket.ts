@@ -24,6 +24,11 @@ export function createApplication(
       const game = await gameService.setFinishGame(id);
       socket.emit(ServerEvent.GameFinished, game);
     });
+    socket.on(ClientEvent.UserVote, async (data: any) => {
+      const { userId, taskId, score } = data;
+      const userScore = await gameService.userVote(userId, taskId, score);
+      socket.emit(ServerEvent.UserVoted, userScore);
+    });
      /* ---------- End events for Game ------------ */
 
     socket.on('disconnect', () => {
