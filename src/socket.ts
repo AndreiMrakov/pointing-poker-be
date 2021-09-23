@@ -1,9 +1,9 @@
 import { Server as HttpServer } from "http";
 import { Server, ServerOptions } from "socket.io";
-import { gameService } from "./services";
-import { ClientEvent } from "./utils/enums/ClientEvent";
-import { ServerEvent } from "./utils/enums/ServerEvent";
-import { isValid } from "./validation";
+import { gameService } from "@/services";
+import { SocketEvent } from "@/utils/enums";
+import { socketEventValidator } from "@/validation";
+import { IRoom, IUserScore } from "@/utils/enums/interfaces";
 
 export function createApplication(
   httpServer: HttpServer,
@@ -15,30 +15,27 @@ export function createApplication(
     socket.broadcast.emit('message', `A user ${socket.id} connected`);
     
     socket.use((packet, next) => {
-      if (isValid(packet[0], packet[1])) {
-        next();
+      if (socketEventValidator(packet[0], packet[1])) {
+        return next();
       }
-      io.to(socket.id).emit(ServerEvent.ErrorNotData, {
+      io.to(socket.id).emit(SocketEvent.ErrorNotData, {
         message: 'Not found data',
       });
-      next(Error('Not found data'));
+      return next(Error('Not found data'));
     });
 
     /* ---------- Events for Game ------------ */
-    socket.on(ClientEvent.GameStart, async (data: any) => {
-      const { id } = data;
-      const game = await gameService.setStartGame(id);
-      socket.emit(ServerEvent.GameStarted, game);
+    socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
+      const game = await gameService.setStartGame(payload);
+      socket.to(payload.id).emit(SocketEvent.GameStart, game);
     });
-    socket.on(ClientEvent.GameFinish, async (data: any) => {
-      const { id } = data;
-      const game = await gameService.setFinishGame(id);
-      socket.emit(ServerEvent.GameFinished, game);
+    socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
+      const game = await gameService.setFinishGame(payload);
+      socket.to(payload.id).emit(SocketEvent.GameFinish, game);
     });
-    socket.on(ClientEvent.UserVote, async (data: any) => {
-      const { userId, taskId, score } = data;
-      const userScore = await gameService.userVote(userId, taskId, score);
-      socket.emit(ServerEvent.UserVoted, userScore);
+    socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
+      const userScore = await gameService.userVote(payload);
+      socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
     });
      /* ---------- End events for Game ------------ */
 

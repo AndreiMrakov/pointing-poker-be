@@ -2,9 +2,9 @@ require('dotenv').config();
 import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
-import { sequelize } from './models';
-import { runAllSeeds } from './seeders';
-import { createApplication } from './socket';
+import { sequelize } from '@/models';
+import { runAllSeeds } from '@/seeders';
+import { createApplication } from '@/socket';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 

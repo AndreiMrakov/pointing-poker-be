@@ -1,11 +1,14 @@
 import { RoomState } from "@/models/RoomState";
 import { Room } from "@/models/Room";
 import { UserScore } from "@/models/UserScore";
+import { IRoom, IUserScore } from "@/utils/enums/interfaces";
 
 // states: ['beginning', 'progress', 'finished']
 
 class GameService {
-  async userVote(userId: number, taskId: number, score: number,) {
+  async userVote(payload: IUserScore) {
+    const { userId, taskId, score } = payload;
+
     try {
       const [userScore, created] = await UserScore.findOrCreate({
         where: { userId, taskId },
@@ -13,33 +16,33 @@ class GameService {
           score,
         },
       });
-      return created
-        ? userScore
-        : (
-          (await UserScore.update(
-            { score },
-            {
-              where: { id: userScore.get().id },
-              returning: true,
-            }
-          ))[1][0]
-        );   
+      if (created) {
+        return userScore;
+      } else {
+        return (await UserScore.update(
+          { score },
+          {
+            where: { id: userScore.get().id },
+            returning: true,
+          }
+        ))[1][0];
+      }
     } catch(e) {
       console.log(`UserScore was not created / updated. ${e}.`);
     }
   }
 
-  async setStartGame(id: string) {
+  async setStartGame(payload: IRoom) {
     const stateId = await this.getIdStateRoom("progress");
-    return await this.updateRoomGame(id, stateId);
+    return this.updateRoomGame(payload.id, stateId);
   }
 
-  async setFinishGame(id: string) {
+  async setFinishGame(payload: IRoom) {
     const stateId = await this.getIdStateRoom("finished");
-    return await this.updateRoomGame(id, stateId);
+    return this.updateRoomGame(payload.id, stateId);
   }
 
-  async updateRoomGame(id: string, stateId: number) {
+  private async updateRoomGame(id: string, stateId: number) {
     try {
       const room = await Room.update(
         { roomStateId: stateId },
@@ -54,10 +57,10 @@ class GameService {
     }
   }
 
-  async getIdStateRoom(title: string) {
+  private async getIdStateRoom(title: string) {
     try {
       const state = await RoomState.findOne({
-        where: { title }
+        where: { title },
       });
       return state?.get().id;
     } catch(e) {
