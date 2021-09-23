@@ -1,8 +1,8 @@
 import { Server as HttpServer } from "http";
 import { Server, ServerOptions } from "socket.io";
-import { taskService } from "./services";
-import { ClientEvent } from "./utils/enums/ClientEvent";
-import { ServerEvent } from "./utils/enums/ServerEvent";
+import { taskService } from "@/services";
+import { ClientEvent } from "@/utils/enums/ClientEvent";
+import { ServerEvent } from "@/utils/enums/ServerEvent";
 
 export function createApplication(
   httpServer: HttpServer,

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpError } from '../error';
-import { taskService } from '../services';
+import { HttpError } from '@/error';
+import { taskService } from '@/services';
 
 export class TaskController {
   static async getAllTasks(req: Request, res: Response, next: NextFunction) {

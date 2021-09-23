@@ -1,4 +1,4 @@
-import { RoomState } from "../models/RoomState";
+import { RoomState } from "@/models/RoomState";
 
 const states = ['beginning', 'progress', 'finished'];
 

@@ -1,4 +1,4 @@
-import { Task } from "../models/Task";
+import { Task } from "@/models/Task";
 
 class TaskService {
   async getAllTasks(roomId: string) {

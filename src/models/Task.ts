@@ -1,4 +1,4 @@
-import { sequelize } from "../db";
+import { sequelize } from "@/db";
 import { DataTypes } from "sequelize";
 
 export const Task = sequelize.define('task', {
@@ -17,7 +17,7 @@ export const Task = sequelize.define('task', {
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-  }
+  },
 }, {
   underscored: true,
 });
