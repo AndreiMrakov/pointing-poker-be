@@ -8,12 +8,12 @@ Routes for FE:
 
 Socket events:
 
-| Server event name | description                                               |
-| ----------------- | --------------------------------------------------------- |
-| 'task:created'    | request from BE to send created task to all room users    |
-| 'task:deleted'    | request from BE to send id to deleted task to all users   |
-| 'task:get-score'  | request from BE to send updated task to all room users    |
-| 'task:get-active' | request from BE to send 2 updated tasks to all room users |
+| Server event name | description                                             |
+| ----------------- | ------------------------------------------------------- |
+| 'task:created'    | request from BE to send created task to all room users  |
+| 'task:deleted'    | request from BE to send id to deleted task to all users |
+| 'task:get-score'  | request from BE to send updated task to all room users  |
+| 'task:get-active' | request from BE to send updated task to all room users  |
 
 | Client event name | description                                                |
 | ----------------- | ---------------------------------------------------------- |
