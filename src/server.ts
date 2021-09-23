@@ -42,10 +42,12 @@ io.on('connection', (socket) => {
 
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
       const {text, roomId, userId} = payload;
-      const message = await messageService.createMessage(text, roomId, userId);
-      if(message) {
-      socket.to(roomId).emit(SocketEvent.MessageCreated, message);
-    };
+      try {
+        const message = await messageService.createMessage(text, roomId, userId);
+        socket.to(roomId).emit(SocketEvent.MessageCreated, message);
+      } catch (err) {
+        console.log(err);
+      };
   });
 
   socket.on('disconnect', () => {
