@@ -1,12 +1,15 @@
 require('dotenv').config();
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from './db/models';
 import { runAllSeeds } from './db/seeders';
 import { router } from './routers';
 import { messageService } from './services';
+import { IMessage } from './interfaces';
+
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -20,21 +23,26 @@ app.get('/', (req, res) => {
 
 app.use(morgan(LOG_LEVEL));
 app.use(express.json());
+app.use(cors({
+  origin: '*',
+}));
 app.use('/api', router);
 
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
   },
 });
 
 io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
-  socket.on('addMessage', async(text: string, roomId: string, userId: number) => {
+  socket.on('message:create', async(payload: IMessage) => {
+    const {text, roomId, userId} = payload;
     const message = await messageService.createMessage(text, roomId, userId);
-    socket.to(roomId).emit('sendMessage', message);
+    socket.to(roomId).emit('message:created', message);
   })
 
   socket.on('disconnect', () => {
