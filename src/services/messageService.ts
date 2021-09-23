@@ -11,6 +11,8 @@ class MessageService {
 
   async createMessage(text: string, roomId: string, userId: number) {
       const message = await Message.create({text, roomId, userId});
+
+      return message;
   };
 };
 
