@@ -17,6 +17,9 @@
 .env.test.local
 .env.production.local
 
-.idea
+# Editor files
+.idea/*
+.vscode/*
 
+# Logs
 *.log
