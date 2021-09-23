@@ -3,6 +3,7 @@ import { Server, ServerOptions } from "socket.io";
 import { gameService } from "./services";
 import { ClientEvent } from "./utils/enums/ClientEvent";
 import { ServerEvent } from "./utils/enums/ServerEvent";
+import { isValid } from "./validation";
 
 export function createApplication(
   httpServer: HttpServer,
@@ -12,6 +13,16 @@ export function createApplication(
 
   io.on("connection", (socket) => {
     socket.broadcast.emit('message', `A user ${socket.id} connected`);
+    
+    socket.use((packet, next) => {
+      if (isValid(packet[0], packet[1])) {
+        next();
+      }
+      io.to(socket.id).emit('error-data', {
+        message: 'Not found data',
+      });
+      next(Error('Not found data'));
+    });
 
     /* ---------- Events for Game ------------ */
     socket.on(ClientEvent.GameStart, async (data: any) => {
