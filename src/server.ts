@@ -42,8 +42,10 @@ io.on('connection', (socket) => {
 
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
       const {text, roomId, userId} = payload;
+      if(text && roomId && userId) {
       const message = await messageService.createMessage(text, roomId, userId);
       socket.to(roomId).emit(SocketEvent.MessageCreated, message);
+    };
   });
 
   socket.on('disconnect', () => {
