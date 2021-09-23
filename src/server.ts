@@ -9,7 +9,7 @@ import { runAllSeeds } from '@/db/seeders';
 import { router } from '@/routers';
 import { messageService } from '@/services';
 import { IMessage } from '@/utils/interfaces';
-import { SocketEvent } from '@enum/SocketEvent';
+import { SocketEvent } from '@/utils/enums';
 
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
