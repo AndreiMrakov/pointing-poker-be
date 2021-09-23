@@ -21,4 +21,3 @@ export const Task = sequelize.define('task', {
 }, {
   underscored: true,
 });
-

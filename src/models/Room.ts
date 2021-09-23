@@ -14,4 +14,3 @@ export const Room = sequelize.define('room', {
 }, {
   underscored: true,
 });
-
