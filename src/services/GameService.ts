@@ -25,7 +25,7 @@ class GameService {
           ))[1][0]
         );   
     } catch(e) {
-      return `UserScore was not created / updated. ${e}.`;
+      console.log(`UserScore was not created / updated. ${e}.`);
     }
   }
 
@@ -50,7 +50,7 @@ class GameService {
       );
       return room;
     } catch(e) {
-      return `Room id=${id} was not updated. ${e}.`;
+      console.log(`Room id=${id} was not updated. ${e}.`);
     }
   }
 
@@ -61,7 +61,7 @@ class GameService {
       });
       return state?.get().id;
     } catch(e) {
-      return `Not found state for title: ${title}. ${e}.`;
+      console.log(`Not found state for title: ${title}. ${e}.`);
     }
   }
 }
