@@ -48,16 +48,6 @@ class TaskService {
 
   async setActiveTask(id: number, is_active: boolean, roomId: string) {
     try {
-      const unActiveTask = await Task.update(
-        { is_active: false },
-        {
-          where: {
-            is_active: true,
-            roomId: roomId,
-          },
-          returning: true,
-        }
-      );
       const activeTask = await Task.update(
         { is_active },
         {
@@ -66,7 +56,7 @@ class TaskService {
         }
       );
 
-      return {unActiveTask, activeTask};
+      return activeTask;
     } catch(e) {
       return `Task id=${id} was not updated. ${e}.`;
     }
