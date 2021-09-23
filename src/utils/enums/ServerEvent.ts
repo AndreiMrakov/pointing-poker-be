@@ -1,6 +1,6 @@
 export enum ServerEvent {
-  TaskCreated = 'task:created',
-  TaskDeleted = 'task:deleted',
-  TaskUpdatedScore = 'task:get-score',
-  TaskUpdatedActive = 'task:get-active',
+  TaskCreated = 'task_created',
+  TaskDeleted = 'task_deleted',
+  TaskUpdatedScore = 'task_get_score',
+  TaskUpdatedActive = 'task_get_active',
 }

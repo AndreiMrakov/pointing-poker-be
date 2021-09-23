@@ -1,6 +1,6 @@
 export enum ClientEvent {
-  TaskCreate = 'task:create',
-  TaskDelete = 'task:delete',
-  TaskUpdateScore = 'task:set-score',
-  TaskUpdateActive = 'task:set-active',
+  TaskCreate = 'task_create',
+  TaskDelete = 'task_delete',
+  TaskUpdateScore = 'task_set_score',
+  TaskUpdateActive = 'task_set_active',
 }
