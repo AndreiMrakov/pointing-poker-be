@@ -1,4 +1,5 @@
 import { Task } from "@/models/Task";
+import { ITask } from "@/utils/interfaces";
 
 class TaskService {
   async getAllTasks(roomId: string) {
@@ -9,7 +10,9 @@ class TaskService {
     return tasks;
   }
 
-  async createTask(title: string, description: string, roomId: string) {
+  async createTask(payload: ITask) {
+    const { title, description, roomId } = payload;
+
     try {
       const count = await Task.count({
         where: { roomId }
@@ -26,11 +29,13 @@ class TaskService {
 
       return task;
     } catch(e) {
-      return `Task was not created. ${e}.`;
+      console.log(`Task was not created. ${e}.`);
     }
   }
 
-  async setScoreTask(id: number, score: number, roomId: string) {
+  async setScoreTask(payload: ITask) {
+    const { id, score } = payload;
+
     try {
       const task = await Task.update(
         { score },
@@ -42,11 +47,13 @@ class TaskService {
 
       return task;
     } catch(e) {
-      return `Task id=${id} was not updated. ${e}.`;
+      console.log(`Task id=${id} was not updated. ${e}.`);
     }
   }
 
-  async setActiveTask(id: number, is_active: boolean, roomId: string) {
+  async setActiveTask(payload: ITask) {
+    const { id, is_active } = payload;
+
     try {
       const activeTask = await Task.update(
         { is_active },
@@ -58,11 +65,13 @@ class TaskService {
 
       return activeTask;
     } catch(e) {
-      return `Task id=${id} was not updated. ${e}.`;
+      console.log(`Task id=${id} was not updated. ${e}.`);
     }
   }
 
-  async deleteTask(id: number) {
+  async deleteTask(payload: ITask) {
+    const { id } = payload;
+
     try {
       await Task.destroy({
         where: { id },
@@ -70,7 +79,7 @@ class TaskService {
 
       return true;
     } catch(e) {
-      return `Task id=${id} was not destroyed. ${e}.`;
+      console.log(`Task id=${id} was not destroyed. ${e}.`);
     }
   }
 }
