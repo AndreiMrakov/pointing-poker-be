@@ -1,13 +1,5 @@
 # pointing-poker-be
 
-Routes for FE:
-
-Routes for FE:
-
-| route               | description                |
-| ------------------- | -------------------------- |
-| /api/task?roomId=\* | get all tasks from room \* |
-
 Socket events:
 
 | Server event name | description                                                          |
