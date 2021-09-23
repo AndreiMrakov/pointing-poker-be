@@ -1,5 +1,6 @@
-import { BaseError, HttpStatusCode } from '@/helpers';
+import { BaseError } from '@/helpers';
 import { messageService } from '@/services/messageService';
+import { HttpStatusCode } from '@/utils/enums';
 import {Request, Response} from 'express';
 
 
@@ -12,7 +13,7 @@ class MessageController {
 
       res.json(messages);
     } catch {
-      res.json(new BaseError('There are no messages in this room', HttpStatusCode.NOT_FOUND));
+      res.json(new BaseError(`Wrong room`, HttpStatusCode.NOT_FOUND));
     }
   }
 };
