@@ -1,5 +1,5 @@
 import Router from "express";
-import { roomRouter } from "./RoomRouter";
+import { roomRouter } from "./roomRouter";
 
-const router = Router();
+export const router = Router();
 router.use('/room', roomRouter);

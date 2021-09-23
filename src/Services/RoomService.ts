@@ -1,6 +1,4 @@
-import { Room } from '@src/db/models/Room';
-import { Request, Response } from 'express';
-import { AbstractDataTypeConstructor } from 'sequelize/types';
+import { Room } from '../db/models/Room';
 
 class RoomService {
 
@@ -17,8 +15,7 @@ class RoomService {
     }
   }
 
-  async joinRoom() {
-
+  async joinRoom(id: number) {
   }
 
   async leaveRoom() {
