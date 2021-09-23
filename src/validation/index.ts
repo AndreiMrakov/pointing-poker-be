@@ -1,4 +1,4 @@
-import { ClientEvent } from "../utils/enums/ClientEvent";
+import { ClientEvent } from "@/utils/enums/ClientEvent";
 
 export const isValid = (event: string, data: any) => {
   switch (event) {

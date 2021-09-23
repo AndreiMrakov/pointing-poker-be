@@ -1,6 +1,6 @@
-import { RoomState } from "../models/RoomState";
-import { Room } from "../models/Room";
-import { UserScore } from "../models/UserScore";
+import { RoomState } from "@/models/RoomState";
+import { Room } from "@/models/Room";
+import { UserScore } from "@/models/UserScore";
 
 // states: ['beginning', 'progress', 'finished']
 
