@@ -10,8 +10,8 @@ socket events:
 
 | Event name    | description          |
 | ------------- | -------------------- |
-| 'addMessage'    | request from FE to add messages to room  |
-| 'sendMessage'   | request from BE to send new message to all room users|
+| 'message:create'    | request from FE to add new message to room  |
+| 'message:created'   | request from BE to send new message to all room users|
 
 Backend part for Pointing Poker  
 Staging: https://pointing-poker-app-be.herokuapp.com
