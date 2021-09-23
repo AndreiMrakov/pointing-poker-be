@@ -2,9 +2,9 @@ require('dotenv').config();
 import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
 import { sequelize } from './models';
 import { runAllSeeds } from './seeders';
+import { createApplication } from './socket';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -19,20 +19,16 @@ app.get('/', (req, res) => {
 app.use(morgan(LOG_LEVEL));
 
 const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET'],
+
+createApplication(
+  server,
+  {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST'],
+    },
   },
-});
-
-io.on('connection', (socket) => {
-  socket.broadcast.emit('message', `A user ${socket.id} connected`);
-
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
-  });
-});
+);
 
 (async () => {
   try {
