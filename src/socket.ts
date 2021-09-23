@@ -18,7 +18,7 @@ export function createApplication(
       if (isValid(packet[0], packet[1])) {
         next();
       }
-      io.to(socket.id).emit(ClientEvent.ErrorNotData, {
+      io.to(socket.id).emit(ServerEvent.ErrorNotData, {
         message: 'Not found data',
       });
       next(Error('Not found data'));

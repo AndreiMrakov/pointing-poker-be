@@ -3,5 +3,4 @@ export enum ClientEvent {
   GameFinish = 'finishGame',
   GameRestart = 'restartGame',
   UserVote = 'userVote',
-  ErrorNotData = 'error:not-data',
 }
