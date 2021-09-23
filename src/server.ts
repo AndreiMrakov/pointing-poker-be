@@ -8,7 +8,8 @@ import { sequelize } from './db/models';
 import { runAllSeeds } from './db/seeders';
 import { router } from './routers';
 import { messageService } from './services';
-import { IMessage } from './interfaces';
+import { IMessage } from './utils/interfaces';
+import { SocketEvent } from './utils/enums/SocketEvent';
 
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
@@ -39,11 +40,11 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
-  socket.on('message:create', async(payload: IMessage) => {
-    const {text, roomId, userId} = payload;
-    const message = await messageService.createMessage(text, roomId, userId);
-    socket.to(roomId).emit('message:created', message);
-  })
+  socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
+      const {text, roomId, userId} = payload;
+      const message = await messageService.createMessage(text, roomId, userId);
+      socket.to(roomId).emit(SocketEvent.MessageCreated, message);
+  });
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);

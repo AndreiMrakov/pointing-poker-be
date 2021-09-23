@@ -1,1 +1,1 @@
-export { HttpStatusCode, BaseError } from './BaseError'
+export { BaseError } from './BaseError'
