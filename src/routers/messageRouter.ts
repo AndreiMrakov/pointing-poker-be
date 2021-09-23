@@ -1,4 +1,4 @@
-import { messageController } from '../controllers';
+import { messageController } from '@/controllers';
 import { Router } from 'express';
 
 export const messageRouter = Router();

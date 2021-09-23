@@ -10,9 +10,14 @@ class MessageService {
   }
 
   async createMessage(text: string, roomId: string, userId: number) {
-    const message = await Message.create({text, roomId, userId});
+    if(text && roomId && userId) {
+      const message = await Message.create({text, roomId, userId});
 
-    return message;
+      return message;
+    }
+    else {
+      return null;
+    }
   };
 };
 

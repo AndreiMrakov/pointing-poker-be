@@ -4,12 +4,12 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { sequelize } from './db/models';
-import { runAllSeeds } from './db/seeders';
-import { router } from './routers';
-import { messageService } from './services';
-import { IMessage } from './utils/interfaces';
-import { SocketEvent } from './utils/enums/SocketEvent';
+import { sequelize } from '@/db/models';
+import { runAllSeeds } from '@/db/seeders';
+import { router } from '@/routers';
+import { messageService } from '@/services';
+import { IMessage } from '@/utils/interfaces';
+import { SocketEvent } from '@enum/SocketEvent';
 
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
@@ -42,8 +42,8 @@ io.on('connection', (socket) => {
 
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
       const {text, roomId, userId} = payload;
-      if(text && roomId && userId) {
       const message = await messageService.createMessage(text, roomId, userId);
+      if(message) {
       socket.to(roomId).emit(SocketEvent.MessageCreated, message);
     };
   });
