@@ -3,6 +3,5 @@ export interface ITask {
   title: string,
   roomId: string,
   description?: string,
-  is_active?: boolean,
   score?: number,
 }
