@@ -15,8 +15,10 @@ class RoomController {
     res.json(result);
   }
 
-  async leaveRoom() {
-
+  async leaveRoom(req: Request, res: Response) {
+    const { roomId, userId } = req.body;
+    const result = await roomService.leaveRoom(roomId, userId);
+    res.json(result);
   }
 
   async getRoom(req: Request, res: Response) {

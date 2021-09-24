@@ -30,7 +30,14 @@ class RoomService {
     }
   }
 
-  async leaveRoom(userId: number) {
+  async leaveRoom(roomId: string, userId: number) {
+    try {
+      await UserRoomRole.destroy({
+        where: { userId, roomId  },
+      });
+    } catch(e) {
+      console.log(`Error leave room: `, e);
+    }
   }
 
   async getRoom(id: number) {
