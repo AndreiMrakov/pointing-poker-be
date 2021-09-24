@@ -5,3 +5,4 @@ export const roomRouter = Router();
 
 roomRouter.post('/create', roomController.createRoom);
 roomRouter.get('/:id', roomController.getRoom);
+roomRouter.post('join', roomController.joinRoom);

@@ -30,7 +30,7 @@ class RoomService {
     }
   }
 
-  async leaveRoom() {
+  async leaveRoom(userId: number) {
   }
 
   async getRoom(id: number) {
