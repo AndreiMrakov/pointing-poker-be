@@ -1,3 +1,4 @@
+import { UserRoomRole } from '@src/db/models/UserRoomRole';
 import { Room } from '../db/models/Room';
 
 class RoomService {
@@ -15,11 +16,21 @@ class RoomService {
     }
   }
 
-  async joinRoom(id: number) {
+  async joinRoom(roomId: string, userId: number, roleId: number) {
+    try {
+      await UserRoomRole.create({
+        roomId,
+        userId,
+        roleId
+      })
+
+      return true;
+    } catch(e) {
+      console.log(`Error join room: `, e);
+    }
   }
 
   async leaveRoom() {
-
   }
 
   async getRoom(id: number) {
