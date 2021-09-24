@@ -9,8 +9,10 @@ class RoomController {
     res.json(tasks);
   }
 
-  async joinRoom() {
-
+  async joinRoom(req: Request, res: Response) {
+    const { roomId, userId, roleId } = req.body;
+    const result = await roomService.joinRoom(roomId, userId, roleId);
+    res.json(result);
   }
 
   async leaveRoom() {
