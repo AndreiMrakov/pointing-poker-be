@@ -6,7 +6,7 @@ routes for FE:
 | ------------- | -------------------- |
 | /api/messages?roomId=*    | get all messages from room * |
 | /api/users?roomId=*    | get all users from room * |
-| /api/users/user?userId=*    | get user by his id|
+| /api/users/user?id=*    | get user by his id|
 
 socket events:
 

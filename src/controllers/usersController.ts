@@ -18,9 +18,9 @@ class UserController {
 
   async getUser(req: Request, res: Response) {
     try {
-      const { userId } = req.query;
+      const { id } = req.query;
 
-      const user = await userService.getUserById(userId as string);
+      const user = await userService.getUserById(id as string);
 
       res.json(user);
     } catch {
