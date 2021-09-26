@@ -1,6 +1,7 @@
 require('dotenv').config();
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import { createServer } from 'http';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
@@ -9,6 +10,9 @@ import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
 import { IRoom, IUserScore } from '@/utils/interfaces';
 import { roomService, userService } from '@/services';
+import { router } from '@/routers';
+import { messageService } from '@/services';
+import { IMessage } from '@/utils/interfaces';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -21,6 +25,11 @@ app.get('/', (req, res) => {
 });
 
 app.use(morgan(LOG_LEVEL));
+app.use(express.json());
+app.use(cors({
+  origin: '*',
+}));
+app.use('/api', router);
 
 const server = createServer(app);
 
@@ -58,7 +67,19 @@ io.on('connection', (socket) => {
     const userScore = await userService.userVote(payload);
     socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
   });
-   /* ---------- End events for Game ------------ */
+  /* ---------- End events for Game ------------ */
+
+  /* ---------- Events for Message ------------ */
+  socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
+      const {text, roomId, userId} = payload;
+      try {
+        const message = await messageService.createMessage(text, roomId, userId);
+        socket.to(roomId).emit(SocketEvent.MessageCreated, message);
+      } catch (err) {
+        console.log(err);
+      };
+  });
+  /* ---------- End events for Message ------------ */
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);

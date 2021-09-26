@@ -4,4 +4,6 @@ export enum SocketEvent {
   GameRestart = 'game_restart',
   UserVote = 'user_vote',
   ErrorNotData = 'error_not_data',
-}
+  MessageCreate = 'message:create',
+  MessageCreated = 'message:created'
+};
