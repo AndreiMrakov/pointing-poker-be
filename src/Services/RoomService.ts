@@ -1,16 +1,17 @@
+import { RoomState } from '@src/db/models/RoomState';
+import { Task } from '@src/db/models/Task';
 import { UserRoomRole } from '@src/db/models/UserRoomRole';
 import { Room } from '../db/models/Room';
 
 class RoomService {
 
-  async createRoom(id: number, title: string) {
+  async createRoom(title: string) {
     try {
-      await Room.create({
-        id,
+      const room = await Room.create({
         title,
       });
 
-      return await this.getRoom(id);
+      return room.toJSON();
     } catch(e) {
       console.log(`Error create room ${title}: `, e);
     }
@@ -40,11 +41,10 @@ class RoomService {
     }
   }
 
-  async getRoom(id: number) {
-    const room = await Room.findOne({
-      where: { id }
+  async getRoom(id: string) {
+    return await Task.findByPk(id, {
+      include: RoomState,
     });
-    return room;
   }
 };
 

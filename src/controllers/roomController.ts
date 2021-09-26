@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { roomService } from '../services/RoomService';
+import { roomService } from '@src/Services/RoomService';
 
 class RoomController {
 
   async createRoom(req: Request, res: Response) {
     const { id, title } = req.body;
-    const tasks = await roomService.createRoom(id, title);
+    const tasks = await roomService.createRoom(title);
     res.json(tasks);
   }
 
@@ -24,12 +24,11 @@ class RoomController {
   async getRoom(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const room = await roomService.getRoom(id as unknown as number);
+      const room = await roomService.getRoom(id as string);
       res.json(room);
     } catch {
       res.json('Room is not found')
     }
-    
   }
 };
 
