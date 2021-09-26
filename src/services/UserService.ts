@@ -1,4 +1,4 @@
-import { UserScore } from "@/models/UserScore";
+import { UserScore } from "@/models";
 import { IUserScore } from "@/utils/interfaces";
 
 class UserService {
@@ -14,15 +14,14 @@ class UserService {
       });
       if (created) {
         return userScore.toJSON();
-      } else {
-        return (await UserScore.update(
-          { score },
-          {
-            where: { id: userScore.get().id },
-            returning: true,
-          }
-        ))[1][0].toJSON();
       }
+      return (await UserScore.update(
+        { score },
+        {
+          where: { id: userScore.get().id },
+          returning: true,
+        }
+      ))[1][0].toJSON();
     } catch(e) {
       console.log(`UserScore was not created / updated. ${e}.`);
     }

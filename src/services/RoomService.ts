@@ -1,5 +1,5 @@
-import { RoomState } from "@/models/RoomState";
-import { Room } from "@/models/Room";
+import { RoomState } from "@/models";
+import { Room } from "@/models";
 import { IRoom, IRoomState } from "@/utils/interfaces";
 
 // states: ['beginning', 'progress', 'finished']

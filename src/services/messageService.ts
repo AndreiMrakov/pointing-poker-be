@@ -1,4 +1,4 @@
-import { Message } from '@/models/Message';
+import { Message } from '@/models';
 
 class MessageService {
   async getMessagesByRoomId(roomId: string) {

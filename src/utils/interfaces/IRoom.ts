@@ -1,5 +1,5 @@
 export interface IRoom {
   id: string,
-  title?: string,
-  stateId?: number,
+  title: string,
+  stateId: number,
 }

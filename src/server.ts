@@ -3,16 +3,14 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { createServer } from 'http';
+import { Server } from "socket.io";
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
-import { Server } from "socket.io";
 import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
-import { IRoom, IUserScore } from '@/utils/interfaces';
-import { roomService, userService } from '@/services';
+import { IRoom, IUserScore, IMessage } from '@/utils/interfaces';
+import { roomService, userService, messageService } from '@/services';
 import { router } from '@/routers';
-import { messageService } from '@/services';
-import { IMessage } from '@/utils/interfaces';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -44,8 +42,9 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
   // Middleware for validation
-  socket.use((packet, next) => {
-    if (socketEventValidator(packet[0], packet[1])) {
+  socket.use((event: Array<any>, next: (err?: Error) => void) => {
+    const [name, payload] = event;
+    if (socketEventValidator(name, payload)) {
       return next();
     }
     io.to(socket.id).emit(SocketEvent.ErrorNotData, {
