@@ -10,15 +10,13 @@ class TaskService {
     return tasks;
   }
 
-  async createTask(payload: ITask) {
-    const { title, description, roomId } = payload;
-
+  async createTask({ title, description, roomId }: ITask) {
     try {
       const count = await Task.count({
         where: { roomId }
       });
 
-      const is_active = !!count;
+      const is_active = !count;
 
       const task = await Task.create({
         title,
@@ -29,15 +27,13 @@ class TaskService {
 
       return task;
     } catch(e) {
-      console.log(`console - Task was not created. ${e}.`);
+      console.log(`Task was not created. ${e}.`);
     }
   }
 
-  async setScoreTask(payload: ITask) {
-    const { id, score } = payload;
-
+  async setScoreTask({ id, score }: ITask) {
     try {
-      const task = await Task.update(
+      const [_, task] = await Task.update(
         { score },
         {
           where: { id },
@@ -45,17 +41,15 @@ class TaskService {
         }
       );
 
-      return task;
+      return task[0];
     } catch(e) {
       console.log(`Task id=${id} was not updated. ${e}.`);
     }
   }
 
-  async setActiveTask(payload: ITask) {
-    const { id } = payload;
-
+  async setActiveTask({ id }: ITask) {
     try {
-      const activeTask = await Task.update(
+      const [_, activeTask] = await Task.update(
         { is_active: true },
         {
           where: { id },
@@ -63,15 +57,13 @@ class TaskService {
         }
       );
 
-      return activeTask;
+      return activeTask[0];
     } catch(e) {
       console.log(`Task id=${id} was not updated. ${e}.`);
     }
   }
 
-  async deleteTask(payload: ITask) {
-    const { id } = payload;
-
+  async deleteTask({ id }: ITask) {
     try {
       await Task.destroy({
         where: { id },

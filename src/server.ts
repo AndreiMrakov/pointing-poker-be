@@ -23,12 +23,10 @@ app.get('/', (req, res) => {
   res.send('Hello from Express');
 });
 
+app.use(cors());
 app.use(morgan(LOG_LEVEL));
 app.use(express.json());
 app.use('/api', router);
-app.use(cors({
-  origin: '*',
-}));
 app.use(errorHandling);
 
 const server = createServer(app);
@@ -44,9 +42,11 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
   // Middleware for validation
-  socket.use((packet, next) => {
-    if (socketEventValidator(packet[0], packet[1])) {
-      next();
+  socket.use((event, next) => {
+    const [name, payload] = event;
+
+    if (socketEventValidator(name, payload)) {
+      return next();
     }
     io.to(socket.id).emit(SocketEvent.ErrorNotData, {
       message: 'Not found data',
@@ -56,19 +56,35 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
-    const task = await taskService.createTask(payload);
-    socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
+    try {
+      const task = await taskService.createTask(payload);
+      socket.emit(SocketEvent.TaskCreate, task);
+    } catch (err) {
+      console.log(`Error insert to DB. ${err}.`);
+    };
   });
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
-    const task = await taskService.setScoreTask(payload);
-    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
+    try {
+      const task = await taskService.setScoreTask(payload);
+      socket.emit(SocketEvent.TaskUpdateScore, task);
+    } catch (err) {
+      console.log(`Error update to DB. ${err}.`);
+    };
   });
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
-    const tasks = await taskService.setActiveTask(payload);
-    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, tasks);
+    try {
+      const tasks = await taskService.setActiveTask(payload);
+      socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, tasks);
+    } catch (err) {
+      console.log(`Error update to DB. ${err}.`);
+    };
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
-    await taskService.deleteTask(payload) && socket.emit(SocketEvent.TaskDelete);
+    try {
+      await taskService.deleteTask(payload) && socket.emit(SocketEvent.TaskDelete);
+    } catch (err) {
+      console.log(`Error delete to DB. ${err}.`);
+    };
   });
   /* ---------- End events for Tasks ------------ */
 
