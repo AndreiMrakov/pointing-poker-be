@@ -1,6 +1,6 @@
 import { RoomState } from "@/models/RoomState";
 import { Room } from "@/models/Room";
-import { IRoom, IRoomState } from "@/utils/enums/interfaces";
+import { IRoom, IRoomState } from "@/utils/interfaces";
 
 // states: ['beginning', 'progress', 'finished']
 

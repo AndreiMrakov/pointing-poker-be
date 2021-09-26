@@ -1,5 +1,5 @@
 import { UserScore } from "@/models/UserScore";
-import { IUserScore } from "@/utils/enums/interfaces";
+import { IUserScore } from "@/utils/interfaces";
 
 class UserService {
   async userVote(payload: IUserScore) {
