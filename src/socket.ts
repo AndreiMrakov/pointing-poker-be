@@ -1,6 +1,6 @@
 import { Server as HttpServer } from "http";
 import { Server, ServerOptions } from "socket.io";
-import { gameService } from "@/services";
+import { roomService, userService } from "@/services";
 import { SocketEvent } from "@/utils/enums";
 import { socketEventValidator } from "@/validation";
 import { IRoom, IUserScore } from "@/utils/enums/interfaces";
@@ -26,15 +26,15 @@ export function createApplication(
 
     /* ---------- Events for Game ------------ */
     socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
-      const game = await gameService.setStartGame(payload);
+      const game = await roomService.setStartGame(payload);
       socket.to(payload.id).emit(SocketEvent.GameStart, game);
     });
     socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
-      const game = await gameService.setFinishGame(payload);
+      const game = await roomService.setFinishGame(payload);
       socket.to(payload.id).emit(SocketEvent.GameFinish, game);
     });
     socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
-      const userScore = await gameService.userVote(payload);
+      const userScore = await userService.userVote(payload);
       socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
     });
      /* ---------- End events for Game ------------ */

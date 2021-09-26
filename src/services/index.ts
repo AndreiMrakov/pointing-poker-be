@@ -1,1 +1,2 @@
-export { gameService } from './GameService';
+export { roomService } from './RoomService';
+export { userService } from './UserService';

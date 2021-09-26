@@ -1,37 +1,10 @@
 import { RoomState } from "@/models/RoomState";
 import { Room } from "@/models/Room";
-import { UserScore } from "@/models/UserScore";
-import { IRoom, IUserScore, IRoomState } from "@/utils/enums/interfaces";
+import { IRoom, IRoomState } from "@/utils/enums/interfaces";
 
 // states: ['beginning', 'progress', 'finished']
 
-class GameService {
-  async userVote(payload: IUserScore) {
-    const { userId, taskId, score } = payload;
-
-    try {
-      const [userScore, created] = await UserScore.findOrCreate({
-        where: { userId, taskId },
-        defaults: {
-          score,
-        },
-      });
-      if (created) {
-        return userScore.toJSON();
-      } else {
-        return (await UserScore.update(
-          { score },
-          {
-            where: { id: userScore.get().id },
-            returning: true,
-          }
-        ))[1][0].toJSON();
-      }
-    } catch(e) {
-      console.log(`UserScore was not created / updated. ${e}.`);
-    }
-  }
-
+class RoomService {
   async setStartGame(payload: IRoom): Promise<IRoomState | undefined> {
     const state = await this.getIdStateRoom("progress");
     return this.updateRoomGame(payload.id, state, );
@@ -69,4 +42,4 @@ class GameService {
   }
 }
 
-export const gameService = new GameService();
+export const roomService = new RoomService();
