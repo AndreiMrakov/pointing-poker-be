@@ -1,4 +1,4 @@
-import { Task } from "@/models/Task";
+import { Task } from "@/models";
 import { ITask } from "@/utils/interfaces";
 
 class TaskService {
