@@ -4,7 +4,7 @@ import { ITask } from "@/utils/interfaces";
 class TaskService {
   async getAllTasks(roomId: string) {
     const tasks = await Task.findAll({
-      where: { roomId }
+      where: { roomId },
     });
 
     return tasks;
