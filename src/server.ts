@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
   res.send('Hello from Express');
 });
 
-app.use(morgan('tiny'));
+app.use(morgan(LOG_LEVEL));
 app.use(express.json());
 app.use('/api', router);
 app.use(cors({
@@ -44,15 +44,15 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
   // Middleware for validation
-  // socket.use((packet, next) => {
-  //   if (socketEventValidator(packet[0], packet[1])) {
-  //     next();
-  //   }
-  //   io.to(socket.id).emit(SocketEvent.ErrorNotData, {
-  //     message: 'Not found data',
-  //   });
-  //   next(Error('Not found data'));
-  // });
+  socket.use((packet, next) => {
+    if (socketEventValidator(packet[0], packet[1])) {
+      next();
+    }
+    io.to(socket.id).emit(SocketEvent.ErrorNotData, {
+      message: 'Not found data',
+    });
+    next(Error('Not found data'));
+  });
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
