@@ -1,23 +1,23 @@
 require('dotenv').config();
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { router } from '@/routers';
 import { ErrorHandling } from '@/middleware/ErrorHandlingMiddleware';
-import { SocketEvent } from './utils/enums';
-import { taskService } from './services';
-import { ITask } from './utils/interfaces';
-import { socketEventValidator } from './validation';
+import { SocketEvent } from '@/utils/enums';
+import { taskService, messageService } from '@/services';
+import { ITask, IMessage } from '@/utils/interfaces';
+import { socketEventValidator } from '@/validation';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
 const PORT = process.env.PORT;
 
 const app = express();
-
 
 app.get('/', (req, res) => {
   res.send('Hello from Express');
@@ -26,7 +26,9 @@ app.get('/', (req, res) => {
 app.use(morgan(LOG_LEVEL));
 app.use(express.json());
 app.use('/api', router);
-
+app.use(cors({
+  origin: '*',
+}));
 app.use(ErrorHandling);
 
 const server = createServer(app);
@@ -68,7 +70,19 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
     await taskService.deleteTask(payload) && socket.emit(SocketEvent.TaskDelete);
   });
-   /* ---------- End events for Tasks ------------ */
+  /* ---------- End events for Tasks ------------ */
+
+  /* ---------- Events for Message ------------ */
+  socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
+      const {text, roomId, userId} = payload;
+      try {
+        const message = await messageService.createMessage(text, roomId, userId);
+        socket.to(roomId).emit(SocketEvent.MessageCreated, message);
+      } catch (err) {
+        console.log(err);
+      };
+  });
+  /* ---------- End events for Message ------------ */
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);

@@ -4,4 +4,6 @@ export enum SocketEvent {
   TaskUpdateScore = 'task_set_score',
   TaskUpdateActive = 'task_set_active',
   ErrorNotData = 'error_not_data',
-}
+  MessageCreate = 'message:create',
+  MessageCreated = 'message:created'
+};
