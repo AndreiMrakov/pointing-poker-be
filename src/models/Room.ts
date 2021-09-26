@@ -5,7 +5,8 @@ export const Room = sequelize.define('room', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
-    defaultValue: UUIDV4
+    defaultValue: UUIDV4,
+    allowNull: false,
   },
   title: {
     type: DataTypes.STRING,
