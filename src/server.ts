@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { router } from '@/routers';
-import { ErrorHandling } from '@/middleware/ErrorHandlingMiddleware';
+import { errorHandling } from '@/middleware';
 import { SocketEvent } from '@/utils/enums';
 import { taskService, messageService } from '@/services';
 import { ITask, IMessage } from '@/utils/interfaces';
@@ -23,13 +23,13 @@ app.get('/', (req, res) => {
   res.send('Hello from Express');
 });
 
-app.use(morgan(LOG_LEVEL));
+app.use(morgan('tiny'));
 app.use(express.json());
 app.use('/api', router);
 app.use(cors({
   origin: '*',
 }));
-app.use(ErrorHandling);
+app.use(errorHandling);
 
 const server = createServer(app);
 
@@ -44,15 +44,15 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
   // Middleware for validation
-  socket.use((packet, next) => {
-    if (socketEventValidator(packet[0], packet[1])) {
-      next();
-    }
-    io.to(socket.id).emit(SocketEvent.ErrorNotData, {
-      message: 'Not found data',
-    });
-    next(Error('Not found data'));
-  });
+  // socket.use((packet, next) => {
+  //   if (socketEventValidator(packet[0], packet[1])) {
+  //     next();
+  //   }
+  //   io.to(socket.id).emit(SocketEvent.ErrorNotData, {
+  //     message: 'Not found data',
+  //   });
+  //   next(Error('Not found data'));
+  // });
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
