@@ -1,5 +1,5 @@
 export interface ITask {
-  id?: number,
+  id: number,
   title: string,
   roomId: string,
   description?: string,

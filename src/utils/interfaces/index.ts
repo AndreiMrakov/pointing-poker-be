@@ -1,2 +1,2 @@
-export { ITask } from "@/utils/interfaces/ITask";
+export { ITask } from "./ITask";
 export { IMessage } from './IMessage';

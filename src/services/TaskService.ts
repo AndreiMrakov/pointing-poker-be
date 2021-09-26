@@ -18,7 +18,7 @@ class TaskService {
         where: { roomId }
       });
 
-      const is_active = count === 0 ? true : false;
+      const is_active = !!count;
 
       const task = await Task.create({
         title,
@@ -29,7 +29,7 @@ class TaskService {
 
       return task;
     } catch(e) {
-      console.log(`Task was not created. ${e}.`);
+      console.log(`console - Task was not created. ${e}.`);
     }
   }
 

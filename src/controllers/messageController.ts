@@ -1,5 +1,5 @@
 import { BaseError } from '@/helpers';
-import { messageService } from '@/services/messageService';
+import { messageService } from '@/services';
 import { HttpStatusCode } from '@/utils/enums';
 import {Request, Response} from 'express';
 
