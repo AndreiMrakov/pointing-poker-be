@@ -13,15 +13,16 @@ class UserService {
         },
       });
       if (created) {
-        return userScore.toJSON();
+        return userScore;
       }
-      return (await UserScore.update(
+      const [_, result] = await UserScore.update(
         { score },
         {
           where: { id: userScore.get().id },
           returning: true,
         }
-      ))[1][0].toJSON();
+      );
+      return result[0];
     } catch(e) {
       console.log(`UserScore was not created / updated. ${e}.`);
     }

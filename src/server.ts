@@ -22,11 +22,9 @@ app.get('/', (req, res) => {
   res.send('Hello from Express');
 });
 
+app.use(cors());
 app.use(morgan(LOG_LEVEL));
 app.use(express.json());
-app.use(cors({
-  origin: '*',
-}));
 app.use('/api', router);
 
 const server = createServer(app);
@@ -55,20 +53,36 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Game ------------ */
   socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
-    const game = await roomService.setStartGame(payload);
-    socket.to(payload.id).emit(SocketEvent.GameStart, game);
+    try {
+      const game = await roomService.setStartGame(payload);
+      socket.to(payload.id).emit(SocketEvent.GameStart, game);
+    } catch (err) {
+      console.log(`Error update to DB. ${err}.`);
+    };
   });
   socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
-    const game = await roomService.setRestartGame(payload);
-    socket.to(payload.id).emit(SocketEvent.GameRestart, game);
+    try {
+      const game = await roomService.setRestartGame(payload);
+      socket.to(payload.id).emit(SocketEvent.GameRestart, game);
+    } catch (err) {
+      console.log(`Error update to DB. ${err}.`);
+    };
   });
   socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
-    const game = await roomService.setFinishGame(payload);
-    socket.to(payload.id).emit(SocketEvent.GameFinish, game);
+    try {
+      const game = await roomService.setFinishGame(payload);
+      socket.to(payload.id).emit(SocketEvent.GameFinish, game);
+    } catch (err) {
+      console.log(`Error update to DB. ${err}.`);
+    };
   });
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
-    const userScore = await userService.userVote(payload);
-    socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+    try {
+      const userScore = await userService.userVote(payload);
+      socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+    } catch (err) {
+      console.log(`Error update to DB. ${err}.`);
+    };
   });
   /* ---------- End events for Game ------------ */
 

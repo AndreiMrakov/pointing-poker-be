@@ -6,17 +6,17 @@ import { IRoom, IRoomState } from "@/utils/interfaces";
 
 class RoomService {
   async setStartGame(payload: IRoom): Promise<IRoomState | undefined> {
-    const state = await this.getIdStateRoom("progress");
+    const state = await this.getStateRoom("progress");
     return this.updateRoomGame(payload.id, state);
   }
 
   async setRestartGame(payload: IRoom): Promise<IRoomState | undefined> {
-    const state = await this.getIdStateRoom("beginning");
+    const state = await this.getStateRoom("beginning");
     return this.updateRoomGame(payload.id, state);
   }
 
   async setFinishGame(payload: IRoom): Promise<IRoomState | undefined>  {
-    const state = await this.getIdStateRoom("finished");
+    const state = await this.getStateRoom("finished");
     return this.updateRoomGame(payload.id, state);
   }
 
@@ -35,7 +35,7 @@ class RoomService {
     }
   }
 
-  private async getIdStateRoom(title: string): Promise<IRoomState | undefined> {
+  private async getStateRoom(title: string): Promise<IRoomState | undefined> {
     try {
       const state = await RoomState.findOne({
         where: { title },
