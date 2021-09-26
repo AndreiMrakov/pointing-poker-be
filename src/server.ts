@@ -59,6 +59,10 @@ io.on('connection', (socket) => {
     const game = await roomService.setStartGame(payload);
     socket.to(payload.id).emit(SocketEvent.GameStart, game);
   });
+  socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
+    const game = await roomService.setRestartGame(payload);
+    socket.to(payload.id).emit(SocketEvent.GameRestart, game);
+  });
   socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
     const game = await roomService.setFinishGame(payload);
     socket.to(payload.id).emit(SocketEvent.GameFinish, game);

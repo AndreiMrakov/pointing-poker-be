@@ -7,7 +7,12 @@ import { IRoom, IRoomState } from "@/utils/interfaces";
 class RoomService {
   async setStartGame(payload: IRoom): Promise<IRoomState | undefined> {
     const state = await this.getIdStateRoom("progress");
-    return this.updateRoomGame(payload.id, state, );
+    return this.updateRoomGame(payload.id, state);
+  }
+
+  async setRestartGame(payload: IRoom): Promise<IRoomState | undefined> {
+    const state = await this.getIdStateRoom("beginning");
+    return this.updateRoomGame(payload.id, state);
   }
 
   async setFinishGame(payload: IRoom): Promise<IRoomState | undefined>  {
