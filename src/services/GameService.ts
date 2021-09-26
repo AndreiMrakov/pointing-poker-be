@@ -1,7 +1,7 @@
 import { RoomState } from "@/models/RoomState";
 import { Room } from "@/models/Room";
 import { UserScore } from "@/models/UserScore";
-import { IRoom, IUserScore } from "@/utils/enums/interfaces";
+import { IRoom, IUserScore, IRoomState } from "@/utils/enums/interfaces";
 
 // states: ['beginning', 'progress', 'finished']
 
@@ -17,7 +17,7 @@ class GameService {
         },
       });
       if (created) {
-        return userScore;
+        return userScore.toJSON();
       } else {
         return (await UserScore.update(
           { score },
@@ -25,44 +25,44 @@ class GameService {
             where: { id: userScore.get().id },
             returning: true,
           }
-        ))[1][0];
+        ))[1][0].toJSON();
       }
     } catch(e) {
       console.log(`UserScore was not created / updated. ${e}.`);
     }
   }
 
-  async setStartGame(payload: IRoom) {
-    const stateId = await this.getIdStateRoom("progress");
-    return this.updateRoomGame(payload.id, stateId);
+  async setStartGame(payload: IRoom): Promise<IRoomState | undefined> {
+    const state = await this.getIdStateRoom("progress");
+    return this.updateRoomGame(payload.id, state, );
   }
 
-  async setFinishGame(payload: IRoom) {
-    const stateId = await this.getIdStateRoom("finished");
-    return this.updateRoomGame(payload.id, stateId);
+  async setFinishGame(payload: IRoom): Promise<IRoomState | undefined>  {
+    const state = await this.getIdStateRoom("finished");
+    return this.updateRoomGame(payload.id, state);
   }
 
-  private async updateRoomGame(id: string, stateId: number) {
-    try {
-      const room = await Room.update(
-        { roomStateId: stateId },
+  private async updateRoomGame(id: string, state?: IRoomState): Promise<IRoomState | undefined> {
+    try {      
+      await Room.update(
+        { RoomStateId: state?.id },
         {
           where: { id },
-          returning: true,
         }
       );
-      return room;
+
+      return state;
     } catch(e) {
       console.log(`Room id=${id} was not updated. ${e}.`);
     }
   }
 
-  private async getIdStateRoom(title: string) {
+  private async getIdStateRoom(title: string): Promise<IRoomState | undefined> {
     try {
       const state = await RoomState.findOne({
         where: { title },
       });
-      return state?.get().id;
+      return state?.toJSON() as IRoomState;
     } catch(e) {
       console.log(`Not found state for title: ${title}. ${e}.`);
     }
