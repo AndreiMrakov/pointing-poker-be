@@ -1,11 +1,11 @@
-import { ClientEvent } from "@/utils/enums/ClientEvent";
+import { SocketEvent } from "@/utils/enums/SocketEvent";
 
-export const isValid = (event: string, data: any) => {
+export const socketEventValidator = (event: string, data: any) => {
   switch (event) {
-    case ClientEvent.TaskCreate: return (data.title && data.roomId) ? true : false;
-    case ClientEvent.TaskDelete: return data.id ? true : false;
-    case ClientEvent.TaskUpdateScore: return (data.id && data.score) ? true : false;
-    case ClientEvent.TaskUpdateActive: return data.id ? true : false;
+    case SocketEvent.TaskCreate: return (data.title && data.roomId) ? true : false;
+    case SocketEvent.TaskDelete: return data.id ? true : false;
+    case SocketEvent.TaskUpdateScore: return (data.id && data.score) ? true : false;
+    case SocketEvent.TaskUpdateActive: return data.id ? true : false;
     default: return true;
   }
 }

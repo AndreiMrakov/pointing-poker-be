@@ -2,11 +2,15 @@ require('dotenv').config();
 import express from 'express';
 import morgan from 'morgan';
 import { createServer } from 'http';
+import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { router } from '@/routers';
-import { createApplication } from '@/socket';
 import { ErrorHandling } from '@/middleware/ErrorHandlingMiddleware';
+import { SocketEvent } from './utils/enums';
+import { taskService } from './services';
+import { ITask } from './utils/interfaces';
+import { socketEventValidator } from './validation';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -27,15 +31,49 @@ app.use(ErrorHandling);
 
 const server = createServer(app);
 
-createApplication(
-  server,
-  {
-    cors: {
-      origin: '*',
-      methods: ['GET', 'POST'],
-    },
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
   },
-);
+});
+
+io.on('connection', (socket) => {
+  socket.broadcast.emit('message', `A user ${socket.id} connected`);
+
+  // Middleware for validation
+  socket.use((packet, next) => {
+    if (socketEventValidator(packet[0], packet[1])) {
+      next();
+    }
+    io.to(socket.id).emit(SocketEvent.ErrorNotData, {
+      message: 'Not found data',
+    });
+    next(Error('Not found data'));
+  });
+
+  /* ---------- Events for Tasks ------------ */
+  socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
+    const task = await taskService.createTask(payload);
+    socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
+  });
+  socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
+    const task = await taskService.setScoreTask(payload);
+    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
+  });
+  socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
+    const tasks = await taskService.setActiveTask(payload);
+    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, tasks);
+  });
+  socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
+    await taskService.deleteTask(payload) && socket.emit(SocketEvent.TaskDelete);
+  });
+   /* ---------- End events for Tasks ------------ */
+
+  socket.on('disconnect', () => {
+    socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
+  });
+});
 
 (async () => {
   try {
