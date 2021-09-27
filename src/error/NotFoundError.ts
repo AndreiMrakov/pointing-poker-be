@@ -3,6 +3,6 @@ import { HttpError } from "./HttpError";
 
 export class NotFoundError extends HttpError {
   constructor(message: string) {
-    super(HttpStatusCode.NOT_FOUND, message);
+    super(message, HttpStatusCode.NOT_FOUND);
   }
 }
