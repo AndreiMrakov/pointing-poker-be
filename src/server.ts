@@ -6,12 +6,12 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
-import { taskService, messageService } from '@/Services';
+import { taskService, messageService, roomService } from '@/Services';
 import { router } from '@/routers';
 import { SocketEvent } from '@/utils/enums';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
-import { ITask, IMessage } from '@/utils/interfaces';
+import { ITask, IMessage, IRoom } from '@/utils/interfaces';
 import { socketEventValidator } from '@/validation';
 
 
@@ -104,7 +104,15 @@ io.on('connection', (socket) => {
   /* ---------- End events for Message ------------ */
 
   /* ---------- Events for Room ------------ */
-  
+  socket.on(SocketEvent.RoomCreate, async(payload: IRoom) => {
+    const { title } = payload;
+    try {
+      const room = await roomService.createRoom(title) as IRoom;
+      socket.to(room.id).emit(SocketEvent.RoomCreated, room);
+    } catch (err) {
+      console.log(err);
+    }
+  });
   /* ---------- End events for Room ------------ */
 
   socket.on('disconnect', () => {
