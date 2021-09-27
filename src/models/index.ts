@@ -1,0 +1,10 @@
+import './relation';
+export { sequelize } from '@/db';
+export { Message } from './Message';
+export { Role } from './Role';
+export { Room } from './Room';
+export { RoomState } from './RoomState';
+export { Task } from './Task';
+export { User } from './User';
+export { UserRoomRole } from './UserRoomRole';
+export { UserScore } from './UserScore';

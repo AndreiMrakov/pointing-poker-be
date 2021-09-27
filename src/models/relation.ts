@@ -7,28 +7,28 @@ import { User } from "./User";
 import { UserRoomRole } from "./UserRoomRole";
 import { UserScore } from "./UserScore";
 
-Task.hasMany(UserScore);
+Task.hasMany(UserScore, {foreignKey: { allowNull: false }});
 UserScore.belongsTo(Task);
 
-User.hasMany(UserScore);
+User.hasMany(UserScore, {foreignKey: { allowNull: false }});
 UserScore.belongsTo(User);
 
-User.hasMany(Message);
+User.hasMany(Message, {foreignKey: { allowNull: false }});
 Message.belongsTo(User);
 
-RoomState.hasMany(Room);
+RoomState.hasMany(Room, {foreignKey: { defaultValue: 1, allowNull: false } });
 Room.belongsTo(RoomState);
 
-Room.hasMany(Task);
+Room.hasMany(Task, {foreignKey: { allowNull: false }});
 Task.belongsTo(Room);
 
-Room.hasMany(Message);
+Room.hasMany(Message, {foreignKey: { allowNull: false }});
 Message.belongsTo(Room);
 
-User.hasMany(UserRoomRole);
+User.hasMany(UserRoomRole, {foreignKey: { allowNull: false }});
 UserRoomRole.belongsTo(User);
 
-Room.hasMany(UserRoomRole);
+Room.hasMany(UserRoomRole, {foreignKey: { allowNull: false }});
 UserRoomRole.belongsTo(Room);
 
 Role.hasMany(UserRoomRole);
