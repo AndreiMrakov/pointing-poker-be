@@ -21,6 +21,10 @@ Socket events:
 | 'task_set_active' | request from FE to update is_active task to all room users |
 | 'message:create'  | request from FE to add new message to room                 |
 | 'message:created' | request from BE to send new message to all room users      |
+| 'room:create'     | request from FE to create new room                         |
+| 'room:created'    | request from BE to send about created new room             |
+| 'room:join'       | request from FE to join user in room                       |
+| 'room:leave'      | request from FE to leave user in room                      |
 
 Backend part for Pointing Poker  
 Staging: https://pointing-poker-app-be.herokuapp.com

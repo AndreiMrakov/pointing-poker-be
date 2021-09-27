@@ -6,7 +6,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
-import { taskService, messageService } from '@/services';
+import { taskService, messageService } from '@/Services';
 import { router } from '@/routers';
 import { SocketEvent } from '@/utils/enums';
 import { errorHandling } from '@/middleware';
@@ -102,6 +102,10 @@ io.on('connection', (socket) => {
       };
   });
   /* ---------- End events for Message ------------ */
+
+  /* ---------- Events for Room ------------ */
+  
+  /* ---------- End events for Room ------------ */
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
