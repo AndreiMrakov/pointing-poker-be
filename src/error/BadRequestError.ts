@@ -1,8 +1,8 @@
 import { HttpStatusCode } from "@/utils/enums";
 import { HttpError } from "./HttpError";
 
-export class Forbidden extends HttpError {
+export class BadRequestError extends HttpError {
   constructor(message: string) {
-    super(HttpStatusCode.FORBIDDEN, message);
+    super(HttpStatusCode.BAD_REQUEST, message);
   }
 }

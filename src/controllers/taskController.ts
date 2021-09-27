@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { BadRequest, NotFound } from '@/error';
+import { BadRequestError, NotFoundError } from '@/error';
 import { taskService } from '@/services';
 
 export class TaskController {
@@ -7,12 +7,12 @@ export class TaskController {
     try {
       const { roomId } = req.query;
       if (!roomId) {
-        return next(new NotFound('Not found room id'));
+        return next(new NotFoundError('Not found room id'));
       }
       const tasks = await taskService.getAllTasks(String(roomId));
       res.json(tasks);
     } catch {
-      return next(new BadRequest('Wrong room'));
+      return next(new BadRequestError('Wrong room'));
     }
   }
 }

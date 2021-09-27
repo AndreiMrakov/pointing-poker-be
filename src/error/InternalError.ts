@@ -1,8 +1,8 @@
 import { HttpStatusCode } from "@/utils/enums";
 import { HttpError } from "./HttpError";
 
-export class NotFound extends HttpError {
+export class InternalError extends HttpError {
   constructor(message: string) {
-    super(HttpStatusCode.NOT_FOUND, message);
+    super(HttpStatusCode.INTERNAL_SERVER, message);
   }
 }
