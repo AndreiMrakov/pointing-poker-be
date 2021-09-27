@@ -1,4 +1,4 @@
-import { sequelize } from "../db";
+import { sequelize } from "@/db";
 import { DataTypes } from "sequelize";
 
 export const Role = sequelize.define('role', {
