@@ -48,43 +48,43 @@ io.on('connection', (socket) => {
       return next();
     }
     io.to(socket.id).emit(SocketEvent.ErrorNotData, {
-      message: 'Not found data',
+      message: 'Not found payload',
     });
-    return next(Error('Not found data'));
+    return next(Error('Not found payload'));
   });
 
   /* ---------- Events for Game ------------ */
   socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
-    try {
-      const game = await roomService.setStartGame(payload);
-      socket.to(payload.id).emit(SocketEvent.GameStart, game);
-    } catch (err) {
-      console.log(`Error update to DB. ${err}.`);
-    };
+    const roomState = await roomService.setStartGame(payload);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(payload.id).emit(SocketEvent.GameStart, roomState);
   });
   socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
-    try {
-      const game = await roomService.setRestartGame(payload);
-      socket.to(payload.id).emit(SocketEvent.GameRestart, game);
-    } catch (err) {
-      console.log(`Error update to DB. ${err}.`);
-    };
+    const roomState = await roomService.setRestartGame(payload);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(payload.id).emit(SocketEvent.GameRestart, roomState);
   });
   socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
-    try {
-      const game = await roomService.setFinishGame(payload);
-      socket.to(payload.id).emit(SocketEvent.GameFinish, game);
-    } catch (err) {
-      console.log(`Error update to DB. ${err}.`);
-    };
+    const roomState = await roomService.setFinishGame(payload);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(payload.id).emit(SocketEvent.GameFinish, roomState);
   });
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
-    try {
-      const userScore = await userService.userVote(payload);
-      socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
-    } catch (err) {
-      console.log(`Error update to DB. ${err}.`);
-    };
+    const userScore = await userService.userVote(payload);
+    if (userScore instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(userScore);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
   });
   /* ---------- End events for Game ------------ */
 
@@ -125,13 +125,12 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Message ------------ */
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
-      const {text, roomId, userId} = payload;
-      try {
-        const message = await messageService.createMessage(text, roomId, userId);
-        socket.to(roomId).emit(SocketEvent.MessageCreated, message);
-      } catch (err) {
-        console.log(err);
-      };
+    const message = await messageService.createMessage(payload);
+    if (message instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(message);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
   /* ---------- End events for Message ------------ */
 

@@ -1,4 +1,6 @@
+import { BadRequestError } from '@/error';
 import { Message } from '@/models';
+import { IMessage } from '@/utils/interfaces';
 
 class MessageService {
   async getMessagesByRoomId(roomId: string) {
@@ -9,10 +11,18 @@ class MessageService {
     return messages;
   }
 
-  async createMessage(text: string, roomId: string, userId: number) {
-      const message = await Message.create({text, roomId, userId});
+  async createMessage({ text, roomId, roomUserId }: IMessage) {
+    try {
+      const message = await Message.create({
+        text,
+        roomId,
+        userId: roomUserId,
+      });
 
       return message;
+    } catch(e) {
+      return new BadRequestError(`Error in create Message. ${e}`);
+    }
   };
 };
 

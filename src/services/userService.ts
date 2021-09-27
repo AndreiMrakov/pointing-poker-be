@@ -1,10 +1,9 @@
+import { BadRequestError } from "@/error";
 import { UserScore } from "@/models";
 import { IUserScore } from "@/utils/interfaces";
 
 class UserService {
-  async userVote(payload: IUserScore) {
-    const { userId, taskId, score } = payload;
-
+  async userVote({ userId, taskId, score }: IUserScore) {
     try {
       const [userScore, created] = await UserScore.findOrCreate({
         where: { userId, taskId },
@@ -15,16 +14,16 @@ class UserService {
       if (created) {
         return userScore;
       }
-      const [_, result] = await UserScore.update(
+      const [_, results] = await UserScore.update(
         { score },
         {
           where: { id: userScore.get().id },
           returning: true,
         }
       );
-      return result[0];
+      return results[0];
     } catch(e) {
-      console.log(`UserScore was not created / updated. ${e}.`);
+      return new BadRequestError(`UserScore was not created / updated. ${e}.`);
     }
   }
 }

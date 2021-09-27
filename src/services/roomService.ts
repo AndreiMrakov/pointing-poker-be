@@ -1,3 +1,4 @@
+import { BadRequestError, HttpError } from "@/error";
 import { RoomState } from "@/models";
 import { Room } from "@/models";
 import { IRoom, IRoomState } from "@/utils/interfaces";
@@ -5,25 +6,28 @@ import { IRoom, IRoomState } from "@/utils/interfaces";
 // states: ['beginning', 'progress', 'finished']
 
 class RoomService {
-  async setStartGame(payload: IRoom): Promise<IRoomState | undefined> {
+  async setStartGame(payload: IRoom) {
     const state = await this.getStateRoom("progress");
     return this.updateRoomGame(payload.id, state);
   }
 
-  async setRestartGame(payload: IRoom): Promise<IRoomState | undefined> {
+  async setRestartGame(payload: IRoom) {
     const state = await this.getStateRoom("beginning");
     return this.updateRoomGame(payload.id, state);
   }
 
-  async setFinishGame(payload: IRoom): Promise<IRoomState | undefined>  {
+  async setFinishGame(payload: IRoom)  {
     const state = await this.getStateRoom("finished");
     return this.updateRoomGame(payload.id, state);
   }
 
-  private async updateRoomGame(id: string, state?: IRoomState): Promise<IRoomState | undefined> {
-    try {      
+  private async updateRoomGame(id: string, state?: IRoomState | BadRequestError) {
+    if (state instanceof HttpError) {
+      return state;
+    }
+    try {
       await Room.update(
-        { RoomStateId: state?.id },
+        { roomStateId: state?.id },
         {
           where: { id },
         }
@@ -31,19 +35,18 @@ class RoomService {
 
       return state;
     } catch(e) {
-      console.log(`Room id=${id} was not updated. ${e}.`);
+      return new BadRequestError(`Room id=${id} was not updated. ${e}.`);
     }
   }
 
-  private async getStateRoom(title: string): Promise<IRoomState | undefined> {
-    try {
-      const state = await RoomState.findOne({
-        where: { title },
-      });
-      return state?.toJSON() as IRoomState;
-    } catch(e) {
-      console.log(`Not found state for title: ${title}. ${e}.`);
+  private async getStateRoom(title: string) {
+    const state = await RoomState.findOne({
+      where: { title },
+    });
+    if (state) {
+      return state.toJSON() as IRoomState;
     }
+    return new BadRequestError(`Not found state for title: ${title}.`);
   }
 }
 
