@@ -40,8 +40,7 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
   // Middleware for validation
-  socket.use((event: Array<any>, next: (err?: Error) => void) => {
-    const [name, payload] = event;
+  socket.use(([name, payload]: Array<any>, next: (err?: Error) => void) => {
     if (socketEventValidator(name, payload)) {
       return next();
     }
