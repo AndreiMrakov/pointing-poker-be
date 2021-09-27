@@ -6,6 +6,10 @@ Routes for FE:
 | ----------------------- | ----------------------------- |
 | /api/task?roomId=\*     | get all tasks from room \*    |
 | /api/messages?roomId=\* | get all messages from room \* |
+| /api/room/create        | create room                   |
+| /api/room/join          | join at room                  |
+| /api/room/leave         | leave room                    |
+| /api/room/:id           | get room by id                |
 
 Socket events:
 
