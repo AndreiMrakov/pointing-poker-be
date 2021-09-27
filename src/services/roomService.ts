@@ -1,6 +1,5 @@
 import { BadRequestError, HttpError } from "@/error";
-import { RoomState } from "@/models";
-import { Room } from "@/models";
+import { RoomState, Room } from "@/models";
 import { IRoom, IRoomState } from "@/utils/interfaces";
 
 // states: ['beginning', 'progress', 'finished']
