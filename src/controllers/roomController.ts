@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { roomService } from '@src/Services/RoomService';
+import { roomService } from '@/services';
 
 class RoomController {
 

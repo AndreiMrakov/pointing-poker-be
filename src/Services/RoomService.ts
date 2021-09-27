@@ -1,7 +1,7 @@
-import { RoomState } from '@src/db/models/RoomState';
-import { Task } from '@src/db/models/Task';
-import { UserRoomRole } from '@src/db/models/UserRoomRole';
-import { Room } from '../db/models/Room';
+import { RoomState } from '@/models/RoomState';
+import { Task } from '@/models/Task';
+import { UserRoomRole } from '@/models/UserRoomRole';
+import { Room } from '@/models/Room';
 
 class RoomService {
 
