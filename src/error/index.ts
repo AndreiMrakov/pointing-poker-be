@@ -1,4 +1,3 @@
-   
 export { HttpError } from './HttpError';
 export { BadRequestError } from './BadRequestError';
 export { ForbiddenError } from './ForbiddenError';

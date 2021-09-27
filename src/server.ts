@@ -8,9 +8,11 @@ import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
-import { IRoom, IUserScore, IMessage } from '@/utils/interfaces';
-import { roomService, userService, messageService } from '@/services';
+import { IRoom, IUserScore, IMessage, ITask } from '@/utils/interfaces';
+import { roomService, userService, messageService, taskService } from '@/services';
 import { router } from '@/routers';
+import { errorHandling } from '@/middleware';
+import { HttpError } from '@/error';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -26,6 +28,7 @@ app.use(cors());
 app.use(morgan(LOG_LEVEL));
 app.use(express.json());
 app.use('/api', router);
+app.use(errorHandling);
 
 const server = createServer(app);
 
@@ -84,6 +87,41 @@ io.on('connection', (socket) => {
     };
   });
   /* ---------- End events for Game ------------ */
+
+  /* ---------- Events for Tasks ------------ */
+  socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
+    const task = await taskService.createTask(payload);
+    if (task instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(task);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
+  });
+  socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
+    const task = await taskService.setScoreTask(payload);
+    if (task instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(task);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
+  });
+  socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
+    const task = await taskService.setActiveTask(payload);
+    if (task instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(task);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
+  });
+  socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
+    const result = await taskService.deleteTaskById(payload);
+    if (result instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(result);
+    }
+    socket.emit(SocketEvent.TaskDelete);
+  });
+  /* ---------- End events for Tasks ------------ */
 
   /* ---------- Events for Message ------------ */
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {

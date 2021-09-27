@@ -1,7 +1,7 @@
-import { RoomStateSeed } from './RoomStateSeed';
-import { RoleSeed } from './RoleSeed';
+import { roomStateSeed } from './RoomStateSeed';
+import { roleSeed } from './RoleSeed';
 
 export const runAllSeeds = async () => {
-  await RoomStateSeed();
-  await RoleSeed();
+  await roomStateSeed();
+  await roleSeed();
 };
