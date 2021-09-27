@@ -11,7 +11,7 @@ class UserService {
   }
 
   async getUserById(id: string) {
-    const user = await User.findAll({
+    const user = await User.findOne({
       where: {id}
     });
 
