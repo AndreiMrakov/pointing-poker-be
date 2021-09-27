@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
-    const result = await taskService.deleteTask(payload);
+    const result = await taskService.deleteTaskById(payload);
     if (result instanceof HttpError) {
       // TODO: add logger to file
       return console.log(result);

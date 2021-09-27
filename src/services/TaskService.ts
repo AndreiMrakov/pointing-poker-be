@@ -34,7 +34,7 @@ class TaskService {
 
   async setScoreTask({ id, score }: ITask) {
     try {
-      const [_, task] = await Task.update(
+      const [_, tasks] = await Task.update(
         { score },
         {
           where: { id },
@@ -42,7 +42,7 @@ class TaskService {
         }
       );
 
-      return task[0];
+      return tasks[0];
     } catch(e) {
       return new BadRequestError(`Error in updated Task id=${id}. ${e}`);
     }
@@ -50,7 +50,7 @@ class TaskService {
 
   async setActiveTask({ id }: ITask) {
     try {
-      const [_, activeTask] = await Task.update(
+      const [_, activeTasks] = await Task.update(
         { is_active: true },
         {
           where: { id },
@@ -58,13 +58,13 @@ class TaskService {
         }
       );
 
-      return activeTask[0];
+      return activeTasks[0];
     } catch(e) {
       return new BadRequestError(`Error in updated Task id=${id}. ${e}`);
     }
   }
 
-  async deleteTask({ id }: ITask) {
+  async deleteTaskById({ id }: ITask) {
     try {
       await Task.destroy({
         where: { id },
