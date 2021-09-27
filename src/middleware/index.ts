@@ -1,1 +1,1 @@
-export { errorHandling } from "./ErrorHandlingMiddleware";
+export { errorHandling } from "./errorHandlingMiddleware";
