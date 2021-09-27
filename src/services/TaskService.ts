@@ -1,3 +1,4 @@
+import { BadRequestError } from "@/error";
 import { Task } from "@/models";
 import { ITask } from "@/utils/interfaces";
 
@@ -27,7 +28,7 @@ class TaskService {
 
       return task;
     } catch(e) {
-      console.log(`Task was not created. ${e}.`);
+      return new BadRequestError(`Error in create Task. ${e}`);
     }
   }
 
@@ -43,7 +44,7 @@ class TaskService {
 
       return task[0];
     } catch(e) {
-      console.log(`Task id=${id} was not updated. ${e}.`);
+      return new BadRequestError(`Error in updated Task id=${id}. ${e}`);
     }
   }
 
@@ -59,7 +60,7 @@ class TaskService {
 
       return activeTask[0];
     } catch(e) {
-      console.log(`Task id=${id} was not updated. ${e}.`);
+      return new BadRequestError(`Error in updated Task id=${id}. ${e}`);
     }
   }
 
@@ -71,7 +72,7 @@ class TaskService {
 
       return true;
     } catch(e) {
-      console.log(`Task id=${id} was not destroyed. ${e}.`);
+      return new BadRequestError(`Error destroyed Task id=${id}. ${e}`);
     }
   }
 }

@@ -6,10 +6,11 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
+import { taskService, messageService } from '@/services';
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
+import { HttpError } from '@/error';
 import { SocketEvent } from '@/utils/enums';
-import { taskService, messageService } from '@/services';
 import { ITask, IMessage } from '@/utils/interfaces';
 import { socketEventValidator } from '@/validation';
 
@@ -54,35 +55,36 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
-    try {
-      const task = await taskService.createTask(payload);
-      socket.emit(SocketEvent.TaskCreate, task);
-    } catch (err) {
-      console.log(`Error insert to DB. ${err}.`);
-    };
+    const task = await taskService.createTask(payload);
+    if (task instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(task);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
   });
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
-    try {
-      const task = await taskService.setScoreTask(payload);
-      socket.emit(SocketEvent.TaskUpdateScore, task);
-    } catch (err) {
-      console.log(`Error update to DB. ${err}.`);
-    };
+    const task = await taskService.setScoreTask(payload);
+    if (task instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(task);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
   });
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
-    try {
-      const tasks = await taskService.setActiveTask(payload);
-      socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, tasks);
-    } catch (err) {
-      console.log(`Error update to DB. ${err}.`);
-    };
+    const task = await taskService.setActiveTask(payload);
+    if (task instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(task);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
-    try {
-      await taskService.deleteTask(payload) && socket.emit(SocketEvent.TaskDelete);
-    } catch (err) {
-      console.log(`Error delete to DB. ${err}.`);
-    };
+    const result = await taskService.deleteTask(payload);
+    if (result instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(result);
+    }
+    socket.emit(SocketEvent.TaskDelete);
   });
   /* ---------- End events for Tasks ------------ */
 
