@@ -1,7 +1,7 @@
 import { BadRequestError, NotFoundError } from '@/error';
 import { messageService } from '@/services';
+import { IMessageFromDB, ISendMessage } from '@/utils/interfaces';
 import {NextFunction, Request, Response} from 'express';
-
 
 class MessageController {
   async getAllMessages(req: Request, res: Response, next: NextFunction) {
@@ -12,8 +12,19 @@ class MessageController {
       }
 
       const messages = await messageService.getMessagesByRoomId(roomId as string);
-
-      res.json(messages);
+      
+      const messagesToFE: ISendMessage[] = messages.map(msg => {
+        const temp = msg.toJSON() as IMessageFromDB;
+        return {
+          "id": temp.id,
+          "text": temp.text,
+          "date": temp.createdAt,
+          "userId": temp.userId,
+          "roomId": temp.roomId,
+          "name": temp.user.name,
+        };
+      });
+      res.json(messagesToFE);
     } catch {
       return next(new BadRequestError('Wrong room'));
     }
