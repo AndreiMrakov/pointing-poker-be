@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { createServer } from 'http';
-import { Server } from "socket.io";
+import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { socketEventValidator } from '@/validation';
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('message', `A user ${socket.id} connected`);
 
   // Middleware for validation
-  socket.use(([name, payload]: Array<any>, next: (err?: Error) => void) => {
+  socket.use(([name, payload], next) => {
     if (socketEventValidator(name, payload)) {
       return next();
     }
@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Game ------------ */
   socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
-    const roomState = await roomService.setStartGame(payload);
+    const roomState = await roomService.startGame(payload);
     if (roomState instanceof HttpError) {
       // TODO: add logger to file
       return console.log(roomState);
@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
     socket.to(payload.id).emit(SocketEvent.GameStart, roomState);
   });
   socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
-    const roomState = await roomService.setRestartGame(payload);
+    const roomState = await roomService.restartGame(payload);
     if (roomState instanceof HttpError) {
       // TODO: add logger to file
       return console.log(roomState);
@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
     socket.to(payload.id).emit(SocketEvent.GameRestart, roomState);
   });
   socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
-    const roomState = await roomService.setFinishGame(payload);
+    const roomState = await roomService.finishGame(payload);
     if (roomState instanceof HttpError) {
       // TODO: add logger to file
       return console.log(roomState);

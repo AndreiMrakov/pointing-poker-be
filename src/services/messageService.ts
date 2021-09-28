@@ -11,12 +11,12 @@ class MessageService {
     return messages;
   }
 
-  async createMessage({ text, roomId, roomUserId }: IMessage) {
+  async createMessage({ text, roomId, userId }: IMessage) {
     try {
       const message = await Message.create({
         text,
         roomId,
-        userId: roomUserId,
+        userId,
       });
 
       return message;

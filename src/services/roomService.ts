@@ -1,32 +1,33 @@
 import { BadRequestError, HttpError } from "@/error";
 import { RoomState, Room } from "@/models";
+import { StateRoomTitle } from "@/utils/enums";
 import { IRoom, IRoomState } from "@/utils/interfaces";
 
 // states: ['beginning', 'progress', 'finished']
 
 class RoomService {
-  async setStartGame(payload: IRoom) {
-    const state = await this.getStateRoom("progress");
-    return this.updateRoomGame(payload.id, state);
+  async startGame(payload: IRoom) {
+    const state = await this.getStateRoom(StateRoomTitle.run);
+    return this.updateRoomStateById(payload.id, state);
   }
 
-  async setRestartGame(payload: IRoom) {
-    const state = await this.getStateRoom("beginning");
-    return this.updateRoomGame(payload.id, state);
+  async restartGame(payload: IRoom) {
+    const state = await this.getStateRoom(StateRoomTitle.restart);
+    return this.updateRoomStateById(payload.id, state);
   }
 
-  async setFinishGame(payload: IRoom)  {
-    const state = await this.getStateRoom("finished");
-    return this.updateRoomGame(payload.id, state);
+  async finishGame(payload: IRoom)  {
+    const state = await this.getStateRoom(StateRoomTitle.finish);
+    return this.updateRoomStateById(payload.id, state);
   }
 
-  private async updateRoomGame(id: string, state?: IRoomState | BadRequestError) {
+  private async updateRoomStateById(id: string, state: IRoomState | BadRequestError) {
     if (state instanceof HttpError) {
       return state;
     }
     try {
       await Room.update(
-        { roomStateId: state?.id },
+        { roomStateId: state.id },
         {
           where: { id },
         }
