@@ -1,11 +1,18 @@
 import { BadRequestError } from '@/error';
-import { Message } from '@/models';
+import { Message, User } from '@/models';
 import { IMessage } from '@/utils/interfaces';
 
 class MessageService {
   async getMessagesByRoomId(roomId: string) {
     const messages = await Message.findAll({
-      where: {roomId}
+      where: {roomId},
+      attributes: {
+        exclude: ['updatedAt']
+      },     
+      include: {
+        model: User,
+        attributes: ['name'],
+      }
     });
 
     return messages;
