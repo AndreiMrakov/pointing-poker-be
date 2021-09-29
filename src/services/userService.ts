@@ -12,7 +12,7 @@ class UserService {
       include: [
         {
           model: User,
-          attributes: ['name', 'userId'],
+          attributes: ['name', 'id'],
         },
         {
           model: Role,
