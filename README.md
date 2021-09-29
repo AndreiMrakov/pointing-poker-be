@@ -7,7 +7,7 @@ Routes for FE:
 | /api/task?roomId=\*     | get all tasks from room \*    |                           |
 | /api/messages?roomId=\* | get all messages from room \* |                           |
 | /api/users?roomId=*    | get all users from room * |  {userId: number, role: string, name: string, roomId: string}[] |
-| /api/users/:*    | get user by his id|                           |
+| /api/users/:*    | get user by his id| {userId: number, name: string, roomId: string} |
 
 Socket events:
 
