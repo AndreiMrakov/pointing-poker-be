@@ -2,12 +2,12 @@
 
 Routes for FE:
 
-| route                   | description                   |
-| ----------------------- | ----------------------------- |
-| /api/task?roomId=\*     | get all tasks from room \*    |
-| /api/messages?roomId=\* | get all messages from room \* |
-| /api/users?roomId=*    | get all users from room * |
-| /api/users/user?id=*    | get user by his id|
+| route                   | description                   | payload                   |
+| ----------------------- | ----------------------------- |-------------------------- |
+| /api/task?roomId=\*     | get all tasks from room \*    |                           |
+| /api/messages?roomId=\* | get all messages from room \* |                           |
+| /api/users?roomId=*    | get all users from room * |  {userId: number, role: string, name: string}[] |
+| /api/users/:*    | get user by his id|                           |
 
 Socket events:
 
