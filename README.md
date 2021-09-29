@@ -24,7 +24,9 @@ Socket events:
 | 'room:create'     | request from FE to create new room                         |
 | 'room:created'    | request from BE to send about created new room             |
 | 'room:join'       | request from FE to join user in room                       |
+| 'room:joined'     | request from BE to joined user in room                     |
 | 'room:leave'      | request from FE to leave user in room                      |
+| 'room:leaved'     | request from BE to leaved user in room                     |
 
 Backend part for Pointing Poker  
 Staging: https://pointing-poker-app-be.herokuapp.com

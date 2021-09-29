@@ -9,5 +9,7 @@ export enum SocketEvent {
   RoomCreate = 'room:create',
   RoomCreated = 'room:created',
   RoomJoin = 'room:join',
-  RoomLeave = 'room:leave'
+  RoomJoined = 'room:joined',
+  RoomLeave = 'room:leave',
+  RoomLeaved = 'room:leaved'
 };

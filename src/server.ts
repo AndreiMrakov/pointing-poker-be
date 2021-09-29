@@ -113,6 +113,18 @@ io.on('connection', (socket) => {
       console.log(err);
     }
   });
+
+  socket.on(SocketEvent.RoomJoin, async(payload: IRoom) => {
+    const { id } = payload;
+    socket.join(id);
+    socket.emit(SocketEvent.RoomJoined);
+  });
+
+  socket.on(SocketEvent.RoomLeave, async(payload: IRoom) => {
+    const { id } = payload;
+    socket.leave(id);
+    socket.emit(SocketEvent.RoomLeaved);
+  });
   /* ---------- End events for Room ------------ */
 
   socket.on('disconnect', () => {
