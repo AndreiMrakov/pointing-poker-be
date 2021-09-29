@@ -3,12 +3,16 @@ export interface IUserRoomRole {
   userId: number;
   roomId: string;
   roleId: number;
-  user: {
+  user: [
+   { 
     name: string;
     id: number;
-  };
-  role: {
+   }
+  ];
+  role: [
+    { 
     title: string;
     id: number;
-  }
+    }
+ ]
 }

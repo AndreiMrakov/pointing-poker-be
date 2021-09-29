@@ -12,11 +12,11 @@ class UserService {
       include: [
         {
           model: User,
-          attributes: ['name'],
+          attributes: ['name', 'userId'],
         },
         {
           model: Role,
-          attributes: ['title']
+          attributes: ['title', 'id']
         }]
     });
 
@@ -29,10 +29,6 @@ class UserService {
       attributes: {
         exclude: ['createdAt', 'updatedAt']
       },
-      include: {
-        model: Role,
-        attributes: ['title']
-      }
     });
 
       return user;

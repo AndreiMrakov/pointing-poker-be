@@ -14,8 +14,9 @@ class UserController {
         const temp = usr.toJSON() as IUserRoomRole;
         return {
           userId: temp.userId,
-          name: temp.user.name,
-          role: temp.role.title
+          roomId: temp.roomId,
+          name: temp.user.find(usr => usr.id === temp.userId)!.name,
+          role: temp.role.find(rl => rl.id === temp.roleId)!.title
         }
       })
 
