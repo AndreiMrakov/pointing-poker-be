@@ -29,6 +29,10 @@ class UserService {
       attributes: {
         exclude: ['createdAt', 'updatedAt']
       },
+      include: {
+        model: UserRoomRole,
+        attributes: ['roomId']
+      }
     });
 
       return user;

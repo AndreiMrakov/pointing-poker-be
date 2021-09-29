@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError } from "@/error";
 import { userService } from "@/services";
-import { IUser, IUserRoomRole } from "@/utils/interfaces";
+import { IUser, IUserRoomRole, IUserToFE } from "@/utils/interfaces";
 import {Request, Response} from 'express';
 
 class UserController {
@@ -10,7 +10,7 @@ class UserController {
 
       const users = await userService.getUsersByRoomId(roomId as string);
 
-      const usersToFE: IUser[] = users.map(usr => {
+      const usersToFE: IUserToFE[] = users.map(usr => {
         const temp = usr.toJSON() as IUserRoomRole;
         return {
           userId: temp.userId,
@@ -30,9 +30,15 @@ class UserController {
     try {
       const { id } = req.params;
 
-      const user = await userService.getUserById(id as string);
+      const user = (await userService.getUserById(id as string))?.toJSON() as IUser;
 
-      res.json(user);
+      const UsersToFE: IUserToFE = {
+        userId: user.id,
+        roomId: user.userRomeRole.roomId,
+        name: user.name
+      }
+
+      res.json(UsersToFE);
     } catch {
       res.json(new NotFoundError(`Wrong user id`));
     }

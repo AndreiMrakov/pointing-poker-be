@@ -1,6 +1,7 @@
 export interface IUser {
-  userId: number;
-  roomId: string;
-  role: string;
+  id: number;
   name: string;
+  userRomeRole: {
+    roomId: string;
+  }
 }
