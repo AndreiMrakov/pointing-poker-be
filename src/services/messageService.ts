@@ -1,6 +1,6 @@
 import { BadRequestError } from '@/error';
 import { Message, User } from '@/models';
-import { IMessage } from '@/utils/interfaces';
+import { IMessage, IMessageFromDB, ISendMessage } from '@/utils/interfaces';
 
 class MessageService {
   async getMessagesByRoomId(roomId: string) {
@@ -8,14 +8,26 @@ class MessageService {
       where: {roomId},
       attributes: {
         exclude: ['updatedAt']
-      },     
+      },
       include: {
         model: User,
         attributes: ['name'],
-      }
+      },
     });
 
-    return messages;
+    const messagesToFE: ISendMessage[] = messages.map(msg => {
+      const temp = msg.toJSON() as IMessageFromDB;
+      return {
+        "id": temp.id,
+        "text": temp.text,
+        "date": temp.createdAt,
+        "userId": temp.userId,
+        "roomId": temp.roomId,
+        "name": temp.user.name,
+      };
+    });
+
+    return messagesToFE;
   }
 
   async createMessage({ text, roomId, userId }: IMessage) {

@@ -1,24 +1,22 @@
 import { BadRequestError, HttpError } from "@/error";
 import { RoomState, Room } from "@/models";
-import { StateRoomTitle } from "@/utils/enums";
+import { RoomStateTitle } from "@/utils/enums";
 import { IRoom, IRoomState } from "@/utils/interfaces";
 
-// states: ['beginning', 'progress', 'finished']
-
 class RoomService {
-  async startGame(payload: IRoom) {
-    const state = await this.getStateRoom(StateRoomTitle.run);
-    return this.updateRoomStateById(payload.id, state);
+  async startGame(room: IRoom) {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.run);
+    return this.updateRoomStateById(room.id, state);
   }
 
-  async restartGame(payload: IRoom) {
-    const state = await this.getStateRoom(StateRoomTitle.restart);
-    return this.updateRoomStateById(payload.id, state);
+  async restartGame(room: IRoom) {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.restart);
+    return this.updateRoomStateById(room.id, state);
   }
 
-  async finishGame(payload: IRoom)  {
-    const state = await this.getStateRoom(StateRoomTitle.finish);
-    return this.updateRoomStateById(payload.id, state);
+  async finishGame(room: IRoom)  {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.finish);
+    return this.updateRoomStateById(room.id, state);
   }
 
   private async updateRoomStateById(id: string, state: IRoomState | BadRequestError) {
@@ -39,7 +37,7 @@ class RoomService {
     }
   }
 
-  private async getStateRoom(title: string) {
+  private async getRoomStateByTitle(title: string) {
     const state = await RoomState.findOne({
       where: { title },
     });
