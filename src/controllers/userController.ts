@@ -1,58 +1,57 @@
 import { BadRequestError, NotFoundError } from "@/error";
 import { userService } from "@/services";
-import { IUser, IUserRoomRole, IUserToFE } from "@/utils/interfaces";
-import {Request, Response} from 'express';
+import { IUserRoomRole, IUsersOfRoomToFE } from "@/utils/interfaces";
+import {NextFunction, Request, Response} from 'express';
 
 class UserController {
-  async getAllUsers(req: Request, res: Response) {
+  async getAllUsers(req: Request, res: Response,  next: NextFunction) {
     try {
       const { roomId } = req.query;
+      if (!roomId) {
+        return next(new NotFoundError('Not found room id'));
+      }
 
-      const users = await userService.getUsersByRoomId(roomId as string);
+      const users = await userService.getUsersByRoomId(String(roomId));
 
-      const usersToFE: IUserToFE[] = users.map(usr => {
-        const temp = usr.toJSON() as IUserRoomRole;
+      const usersToFE: IUsersOfRoomToFE[] = users.map(user => {
+        const temp = user.toJSON() as IUserRoomRole;
         return {
-          userId: temp.userId,
+          id: temp.userId,
+          name: temp.user.name,
+          role: temp.role.title,
           roomId: temp.roomId,
-          name: temp.user.find(usr => usr.id === temp.userId)!.name,
-          role: temp.role.find(rl => rl.id === temp.roleId)!.title
         }
       })
 
       res.json(usersToFE);
     } catch {
-      res.json(new NotFoundError(`Wrong room`));
+      return next(new BadRequestError(`Not fount users`));
     }
   }
 
-  async getUser(req: Request, res: Response) {
+  async getUser(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-
-      const user = (await userService.getUserById(id as string))?.toJSON() as IUser;
-
-      const UsersToFE: IUserToFE = {
-        userId: user.id,
-        roomId: user.userRomeRole.roomId,
-        name: user.name
+      if (!id) {
+        return next(new NotFoundError('Not found room id'));
       }
-
-      res.json(UsersToFE);
+      const user = await userService.getUserById(Number(id));
+      
+      res.json(user);
     } catch {
-      res.json(new NotFoundError(`Wrong user id`));
+      return next(new BadRequestError(`Not fount user`));
     }
   }
 
-  async createUser(req: Request, res: Response) {
+  async createUser(req: Request, res: Response, next: NextFunction) {
     try {
-    const { name } = req.body;
+      const { name } = req.body;
 
-    const user = await userService.createUser(name);
+      const user = await userService.createUser(name);
 
-    res.json(user);
+      res.json(user);
     } catch(err) {
-      res.json(new BadRequestError(`Error in create User. ${err}`))
+      return next(new BadRequestError(`Error in create User. ${err}`))
     }
   }
 };

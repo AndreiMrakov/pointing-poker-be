@@ -12,36 +12,30 @@ class UserService {
       include: [
         {
           model: User,
-          attributes: ['name', 'id'],
+          attributes: ['name'],
         },
         {
           model: Role,
-          attributes: ['title', 'id']
-        }]
+          attributes: ['title']
+        }
+      ],
     });
 
     return users;
   }
 
-  async getUserById(id: string) {
-    const user = await User.findOne({
-      where: {id},
+  async getUserById(id: number) {
+    const user = await User.findByPk(id, {
       attributes: {
         exclude: ['createdAt', 'updatedAt']
       },
-      include: {
-        model: UserRoomRole,
-        attributes: ['roomId']
-      }
     });
 
-      return user;
+    return user;
   };
 
   async createUser(name: string) {
-    const user = await User.create({name});
-
-    return user
+    return await User.create({name});
   }
 };
 
