@@ -1,10 +1,9 @@
-import { RoomState } from '@/models/RoomState';
-import { Task } from '@/models/Task';
-import { UserRoomRole } from '@/models/UserRoomRole';
-import { Room } from '@/models/Room';
+import { RoomState, Task, UserRoomRole, Room } from '@/models';
+import { BadRequestError, HttpError } from '@/error';
+import { RoomStateTitle } from '@/utils/enums';
+import { IRoom, IRoomState } from '@/utils/interfaces';
 
 class RoomService {
-
   async createRoom(title: string) {
     try {
       const room = await Room.create({
@@ -45,6 +44,49 @@ class RoomService {
     return await Task.findByPk(id, {
       include: RoomState,
     });
+  }
+
+  async startRoom(room: IRoom) {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.run);
+    return this.updateRoomStateById(room.id, state);
+  }
+
+  async restartRoom(room: IRoom) {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.restart);
+    return this.updateRoomStateById(room.id, state);
+  }
+
+  async finishRoom(room: IRoom)  {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.finish);
+    return this.updateRoomStateById(room.id, state);
+  }
+
+  private async updateRoomStateById(id: string, state: IRoomState | BadRequestError) {
+    if (state instanceof HttpError) {
+      return state;
+    }
+    try {
+      await Room.update(
+        { roomStateId: state.id },
+        {
+          where: { id },
+        }
+      );
+
+      return state;
+    } catch(e) {
+      return new BadRequestError(`Room id=${id} was not updated. ${e}.`);
+    }
+  }
+
+  private async getRoomStateByTitle(title: string) {
+    const state = await RoomState.findOne({
+      where: { title },
+    });
+    if (state) {
+      return state.toJSON() as IRoomState;
+    }
+    return new BadRequestError(`Not found state for title: ${title}.`);
   }
 };
 

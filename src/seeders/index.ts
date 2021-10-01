@@ -1,5 +1,5 @@
-import { roomStateSeed } from './RoomStateSeed';
-import { roleSeed } from './RoleSeed';
+import { roomStateSeed } from './roomStateSeed';
+import { roleSeed } from './roleSeed';
 
 export const runAllSeeds = async () => {
   await roomStateSeed();

@@ -6,14 +6,13 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
-import { taskService, messageService, roomService } from '@/Services';
-import { router } from '@/routers';
+import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
+import { IRoom, IUserScore, IMessage, ITask } from '@/utils/interfaces';
+import { roomService, userService, messageService, taskService } from '@/services';
+import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
-import { ITask, IMessage, IRoom } from '@/utils/interfaces';
-import { socketEventValidator } from '@/validation';
-
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -24,8 +23,6 @@ const app = express();
 app.get('/', (req, res) => {
   res.send('Hello from Express');
 });
-app.use(express.json());
-app.use('/api', router);
 
 app.use(cors());
 app.use(morgan(LOG_LEVEL));
@@ -51,10 +48,69 @@ io.on('connection', (socket) => {
       return next();
     }
     io.to(socket.id).emit(SocketEvent.ErrorNotData, {
-      message: 'Not found data',
+      message: 'Not found payload',
     });
-    next(Error('Not found data'));
+    return next(Error('Not found payload'));
   });
+
+  /* ---------- Events for Room ------------ */
+  socket.on(SocketEvent.RoomStart, async (room: IRoom) => {
+    const roomState = await roomService.startRoom(room);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(room.id).emit(SocketEvent.RoomStart, roomState);
+  });
+  socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
+    const roomState = await roomService.restartRoom(room);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(room.id).emit(SocketEvent.RoomRestart, roomState);
+  });
+  socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
+    const roomState = await roomService.finishRoom(room);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
+  });
+  socket.on(SocketEvent.RoomCreate, async(payload: IRoom) => {
+    const { title } = payload;
+    try {
+      const room = await roomService.createRoom(title) as IRoom;
+      socket.to(room.id).emit(SocketEvent.RoomCreate, room);
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  socket.on(SocketEvent.RoomJoin, async(payload: IRoom) => {
+    const { id } = payload;
+    socket.join(id);
+    socket.emit(SocketEvent.RoomJoin);
+  });
+
+  socket.on(SocketEvent.RoomLeave, async(payload: IRoom) => {
+    const { id } = payload;
+    socket.leave(id);
+    socket.emit(SocketEvent.RoomLeave);
+  });
+  /* ---------- End events for Room ------------ */
+
+  /* ---------- Events for User ------------ */
+  socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
+    const userScore = await userService.userVote(payload);
+    if (userScore instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(userScore);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+  });
+  /* ---------- End events for User ------------ */
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
@@ -93,39 +149,14 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Message ------------ */
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
-      const {text, roomId, userId} = payload;
-      try {
-        const message = await messageService.createMessage(text, roomId, userId);
-        socket.to(roomId).emit(SocketEvent.MessageCreated, message);
-      } catch (err) {
-        console.log(err);
-      };
+    const message = await messageService.createMessage(payload);
+    if (message instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(message);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
   /* ---------- End events for Message ------------ */
-
-  /* ---------- Events for Room ------------ */
-  socket.on(SocketEvent.RoomCreate, async(payload: IRoom) => {
-    const { title } = payload;
-    try {
-      const room = await roomService.createRoom(title) as IRoom;
-      socket.to(room.id).emit(SocketEvent.RoomCreated, room);
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
-  socket.on(SocketEvent.RoomJoin, async(payload: IRoom) => {
-    const { id } = payload;
-    socket.join(id);
-    socket.emit(SocketEvent.RoomJoined);
-  });
-
-  socket.on(SocketEvent.RoomLeave, async(payload: IRoom) => {
-    const { id } = payload;
-    socket.leave(id);
-    socket.emit(SocketEvent.RoomLeaved);
-  });
-  /* ---------- End events for Room ------------ */
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('message', `A user ${socket.id} disconnected`);

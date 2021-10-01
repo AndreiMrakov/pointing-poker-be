@@ -1,15 +1,15 @@
 export enum SocketEvent {
+  UserVote = 'user_vote',
   TaskCreate = 'task_create',
   TaskDelete = 'task_delete',
   TaskUpdateScore = 'task_set_score',
   TaskUpdateActive = 'task_set_active',
+  RoomStart = 'game_start',
+  RoomFinish = 'game_finish',
+  RoomRestart = 'game_restart',
+  RoomCreate = 'room_create',
+  RoomJoin = 'room_join',
+  RoomLeave = 'room_leave',
+  MessageCreate = 'message_create',
   ErrorNotData = 'error_not_data',
-  MessageCreate = 'message:create',
-  MessageCreated = 'message:created',
-  RoomCreate = 'room:create',
-  RoomCreated = 'room:created',
-  RoomJoin = 'room:join',
-  RoomJoined = 'room:joined',
-  RoomLeave = 'room:leave',
-  RoomLeaved = 'room:leaved'
 };
