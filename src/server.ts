@@ -78,6 +78,9 @@ io.on('connection', (socket) => {
     }
     socket.to(payload.id).emit(SocketEvent.GameFinish, roomState);
   });
+  /* ---------- End events for Game ------------ */
+
+  /* ---------- Events for User ------------ */
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
     const userScore = await userService.userVote(payload);
     if (userScore instanceof HttpError) {
@@ -86,7 +89,7 @@ io.on('connection', (socket) => {
     }
     socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
   });
-  /* ---------- End events for Game ------------ */
+  /* ---------- End events for User ------------ */
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
