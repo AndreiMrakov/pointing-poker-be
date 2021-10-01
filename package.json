@@ -8,7 +8,8 @@
     "start": "node -r ts-node/register -r tsconfig-paths/register -r dist/server.js",
     "dev": "nodemon",
     "build": "tsc -p .",
-    "test": "jest --config=jest.config.js"
+    "test": "jest --config=jest.config.js",
+    "heroku-prebuild": "yarn install --dev-dependencies"
   },
   "dependencies": {
     "dotenv": "^10.0.0",

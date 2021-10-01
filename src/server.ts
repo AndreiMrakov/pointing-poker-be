@@ -6,13 +6,13 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
-import { taskService, messageService } from '@/services';
+import { socketEventValidator } from '@/validation';
+import { SocketEvent } from '@/utils/enums';
+import { IRoom, IUserScore, IMessage, ITask } from '@/utils/interfaces';
+import { roomService, userService, messageService, taskService } from '@/services';
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
-import { SocketEvent } from '@/utils/enums';
-import { ITask, IMessage } from '@/utils/interfaces';
-import { socketEventValidator } from '@/validation';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -48,10 +48,45 @@ io.on('connection', (socket) => {
       return next();
     }
     io.to(socket.id).emit(SocketEvent.ErrorNotData, {
-      message: 'Not found data',
+      message: 'Not found payload',
     });
-    next(Error('Not found data'));
+    return next(Error('Not found payload'));
   });
+
+  /* ---------- Events for Game ------------ */
+  socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
+    const roomState = await roomService.startGame(payload);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(payload.id).emit(SocketEvent.GameStart, roomState);
+  });
+  socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
+    const roomState = await roomService.restartGame(payload);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(payload.id).emit(SocketEvent.GameRestart, roomState);
+  });
+  socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
+    const roomState = await roomService.finishGame(payload);
+    if (roomState instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(roomState);
+    }
+    socket.to(payload.id).emit(SocketEvent.GameFinish, roomState);
+  });
+  socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
+    const userScore = await userService.userVote(payload);
+    if (userScore instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(userScore);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+  });
+  /* ---------- End events for Game ------------ */
 
   /* ---------- Events for Tasks ------------ */
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
@@ -90,13 +125,12 @@ io.on('connection', (socket) => {
 
   /* ---------- Events for Message ------------ */
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
-      const {text, roomId, userId} = payload;
-      try {
-        const message = await messageService.createMessage(text, roomId, userId);
-        socket.to(roomId).emit(SocketEvent.MessageCreated, message);
-      } catch (err) {
-        console.log(err);
-      };
+    const message = await messageService.createMessage(payload);
+    if (message instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(message);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
   /* ---------- End events for Message ------------ */
 

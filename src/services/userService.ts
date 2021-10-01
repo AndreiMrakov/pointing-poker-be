@@ -1,6 +1,6 @@
-import { UserRoomRole } from '@/models/UserRoomRole';
-import { User } from "@/models/User";
-import { Role } from '@/models';
+import { User, UserScore, Role, UserRoomRole } from "@/models";
+import { BadRequestError } from "@/error";
+import { IUserScore } from "@/utils/interfaces";
 
 class UserService {
   async getUsersByRoomId(roomId: string) {
@@ -36,6 +36,30 @@ class UserService {
 
   async createUser(name: string) {
     return await User.create({name});
+  }
+
+  async userVote({ userId, taskId, score }: IUserScore) {
+    try {
+      const [userScore, created] = await UserScore.findOrCreate({
+        where: { userId, taskId },
+        defaults: {
+          score,
+        },
+      });
+      if (created) {
+        return userScore;
+      }
+      const [_, results] = await UserScore.update(
+        { score },
+        {
+          where: { id: userScore.get().id },
+          returning: true,
+        }
+      );
+      return results[0];
+    } catch(e) {
+      return new BadRequestError(`UserScore was not created / updated. ${e}.`);
+    }
   }
 };
 

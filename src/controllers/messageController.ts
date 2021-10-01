@@ -2,7 +2,6 @@ import { BadRequestError, NotFoundError } from '@/error';
 import { messageService } from '@/services';
 import {NextFunction, Request, Response} from 'express';
 
-
 class MessageController {
   async getAllMessages(req: Request, res: Response, next: NextFunction) {
     try {
@@ -11,8 +10,8 @@ class MessageController {
         return next(new NotFoundError('Not found room id'));
       }
 
-      const messages = await messageService.getMessagesByRoomId(roomId as string);
-
+      const messages = await messageService.getMessagesByRoomId(String(roomId));
+      
       res.json(messages);
     } catch {
       return next(new BadRequestError('Wrong room'));
