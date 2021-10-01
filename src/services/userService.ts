@@ -1,6 +1,7 @@
 import { User, UserScore, Role, UserRoomRole } from "@/models";
 import { BadRequestError } from "@/error";
-import { IUserScore, IUserRoomRole, IUsersOfRoomToFE } from "@/utils/interfaces";
+import { IUserScore, IUserRoomRole, IUser } from "@/utils/interfaces";
+import { Model } from "sequelize/types";
 
 class UserService {
   async getUsersByRoomId(roomId: string) {
@@ -21,7 +22,7 @@ class UserService {
       ],
     });
 
-    const usersToFE: IUsersOfRoomToFE[] = users.map(user => {
+    const usersToFE: IUser[] = users.map(user => {
       const temp = user.toJSON() as IUserRoomRole;
       return {
         id: temp.userId,
@@ -35,17 +36,15 @@ class UserService {
   }
 
   async getUserById(id: number) {
-    const user = await User.findByPk(id, {
+    return User.findByPk(id, {
       attributes: {
         exclude: ['createdAt', 'updatedAt']
       },
     });
-
-    return user;
   };
 
   async createUser(name: string) {
-    return await User.create({name});
+    return User.create({name});
   }
 
   async userVote({ userId, taskId, score }: IUserScore) {
