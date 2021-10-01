@@ -1,6 +1,5 @@
 import { BadRequestError, NotFoundError } from "@/error";
 import { userService } from "@/services";
-import { IUserRoomRole, IUsersOfRoomToFE } from "@/utils/interfaces";
 import {NextFunction, Request, Response} from 'express';
 
 class UserController {
@@ -13,17 +12,7 @@ class UserController {
 
       const users = await userService.getUsersByRoomId(String(roomId));
 
-      const usersToFE: IUsersOfRoomToFE[] = users.map(user => {
-        const temp = user.toJSON() as IUserRoomRole;
-        return {
-          id: temp.userId,
-          name: temp.user.name,
-          role: temp.role.title,
-          roomId: temp.roomId,
-        }
-      })
-
-      res.json(usersToFE);
+      res.json(users);
     } catch {
       return next(new BadRequestError(`Not fount users`));
     }

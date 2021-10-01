@@ -1,6 +1,6 @@
 import { User, UserScore, Role, UserRoomRole } from "@/models";
 import { BadRequestError } from "@/error";
-import { IUserScore } from "@/utils/interfaces";
+import { IUserScore, IUserRoomRole, IUsersOfRoomToFE } from "@/utils/interfaces";
 
 class UserService {
   async getUsersByRoomId(roomId: string) {
@@ -21,7 +21,17 @@ class UserService {
       ],
     });
 
-    return users;
+    const usersToFE: IUsersOfRoomToFE[] = users.map(user => {
+      const temp = user.toJSON() as IUserRoomRole;
+      return {
+        id: temp.userId,
+        name: temp.user.name,
+        role: temp.role.title,
+        roomId: temp.roomId,
+      }
+    });
+
+    return usersToFE;
   }
 
   async getUserById(id: number) {
