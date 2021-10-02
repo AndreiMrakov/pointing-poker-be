@@ -2,16 +2,14 @@
 
 Routes for FE:
 
-| route                   | description                   |
-| ----------------------- | ----------------------------- |
-| /api/task?roomId=uuid     | get all tasks from room uuid    |
-| /api/messages?roomId=uuid | get all messages from room uuid |
-| /api/room/create        | create room                   |
-| /api/room/join          | join at room                  |
-| /api/room/leave         | leave room                    |
-| /api/room/:id           | get room by id                |
-| /api/users?roomId=uuid    | get all users from room * |  {userId: number, role: string, name: string, roomId: string}[] |
-| /api/users/:id    | get user by his id| {userId: number, name: string, roomId: string} |
+| route                     | description                     | request | response |
+| ------------------------- | ------------------------------- | -------- | --------- |
+| /api/tasks?roomId=uuid    | get all tasks from room uuid    |  | {id, title, description, roomId, score, avg_score, is_active } |
+| /api/messages?roomId=uuid | get all messages from room uuid |  | { id, text,  date, userId, roomId, name }: ISendMessage[] |
+| /api/rooms/create         | create room                     | { title } | { id, title } |
+| /api/rooms/:uuid          | get room by id                  |  | { id, titlee, state? } ? |
+| /api/users?roomId=uuid    | get all users from room *       | | {id, role, name, roomId} : IUser[] |
+| /api/users/:id            | get user by his id              | { id } | { id: number, name: string } |
 
 Socket events:
 
