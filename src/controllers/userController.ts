@@ -13,8 +13,8 @@ class UserController {
       const users = await userService.getUsersByRoomId(String(roomId));
 
       res.json(users);
-    } catch {
-      return next(new BadRequestError(`Not fount users`));
+    } catch(err) {
+      return next(new BadRequestError(`Not fount users. ${err}`));
     }
   }
 
@@ -27,8 +27,8 @@ class UserController {
       const user = await userService.getUserById(Number(id));
       
       res.json(user);
-    } catch {
-      return next(new BadRequestError(`Not fount user`));
+    } catch(err) {
+      return next(new BadRequestError(`Not fount user. ${err}`));
     }
   }
 

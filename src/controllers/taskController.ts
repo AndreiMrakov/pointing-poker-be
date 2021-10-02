@@ -11,8 +11,8 @@ export class TaskController {
       }
       const tasks = await taskService.getAllTasks(String(roomId));
       res.json(tasks);
-    } catch {
-      return next(new BadRequestError('Wrong room'));
+    } catch(err) {
+      return next(new BadRequestError(`Wrong task. ${err}`));
     }
   }
 }

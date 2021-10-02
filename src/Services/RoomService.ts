@@ -1,49 +1,44 @@
 import { RoomState, Task, UserRoomRole, Room } from '@/models';
 import { BadRequestError, HttpError } from '@/error';
 import { RoomStateTitle } from '@/utils/enums';
-import { IRoom, IRoomState } from '@/utils/interfaces';
+import { IJoinRoom, IRoom, IRoomState } from '@/utils/interfaces';
 
 class RoomService {
   async createRoom(title: string) {
-    try {
-      const room = await Room.create({
-        title,
-      });
-
-      return room.toJSON();
-    } catch(e) {
-      console.log(`Error create room ${title}: `, e);
-    }
+    return Room.create({ title });
   }
 
-  async joinRoom(roomId: string, userId: number, roleId: number) {
+  async joinRoom({ roomId, userId, roleId }: IJoinRoom) {
     try {
-      await UserRoomRole.create({
+      const result = await UserRoomRole.create({
         roomId,
         userId,
         roleId
-      })
+      });
 
-      return true;
-    } catch(e) {
-      console.log(`Error join room: `, e);
+      return !!result;
+    } catch(err) {
+      return new BadRequestError(`Error join to room. ${err}`);
     }
   }
 
-  async leaveRoom(roomId: string, userId: number) {
+  async leaveRoom({ roomId, userId }: IJoinRoom) {
     try {
       await UserRoomRole.destroy({
         where: { userId, roomId  },
       });
+
+      return userId; // or return name?
     } catch(e) {
-      console.log(`Error leave room: `, e);
+      return new BadRequestError(`Error leave User ${userId}. ${e}`);
     }
   }
 
   async getRoom(id: string) {
-    return await Task.findByPk(id, {
+    return await Room.findByPk(id, {
       include: RoomState,
     });
+    //TODO: responce norm view
   }
 
   async startRoom(room: IRoom) {

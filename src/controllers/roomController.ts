@@ -1,33 +1,32 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { roomService } from '@/services';
+import { BadRequestError, NotFoundError } from '@/error';
 
 class RoomController {
-
-  async createRoom(req: Request, res: Response) {
-    const { id, title } = req.body;
-    const tasks = await roomService.createRoom(title);
-    res.json(tasks);
-  }
-
-  async joinRoom(req: Request, res: Response) {
-    const { roomId, userId, roleId } = req.body;
-    const result = await roomService.joinRoom(roomId, userId, roleId);
-    res.json(result);
-  }
-
-  async leaveRoom(req: Request, res: Response) {
-    const { roomId, userId } = req.body;
-    const result = await roomService.leaveRoom(roomId, userId);
-    res.json(result);
-  }
-
-  async getRoom(req: Request, res: Response) {
+  async createRoom(req: Request, res: Response, next: NextFunction) {
+    const { title } = req.body;
+    if (!title) {
+      return next(new NotFoundError('Not found room title'));
+    }
     try {
-      const { id } = req.params;
-      const room = await roomService.getRoom(id as string);
+      const tasks = await roomService.createRoom(title);
+
+      res.json(tasks);
+    } catch(err) {
+      return next(new BadRequestError(`Wrong room. ${err}`));
+    }
+  }
+
+  async getRoom(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    if (!id) {
+      return next(new NotFoundError('Not found room id'));
+    }
+    try {
+      const room = await roomService.getRoom(id);
       res.json(room);
-    } catch {
-      res.json('Room is not found')
+    } catch(err) {
+      return next(new BadRequestError(`Wrong room. ${err}`));
     }
   }
 };

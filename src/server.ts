@@ -8,7 +8,7 @@ import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
-import { IRoom, IUserScore, IMessage, ITask } from '@/utils/interfaces';
+import { IRoom, IUserScore, IMessage, ITask, IJoinRoom } from '@/utils/interfaces';
 import { roomService, userService, messageService, taskService } from '@/services';
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
@@ -78,26 +78,23 @@ io.on('connection', (socket) => {
     }
     socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
   });
-  socket.on(SocketEvent.RoomCreate, async(payload: IRoom) => {
-    const { title } = payload;
-    try {
-      const room = await roomService.createRoom(title) as IRoom;
-      socket.to(room.id).emit(SocketEvent.RoomCreate, room);
-    } catch (err) {
-      console.log(err);
+  socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
+    const isJoin = await roomService.joinRoom(payload);
+    if (isJoin instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(isJoin);
     }
+    socket.to(payload.roomId).emit(SocketEvent.RoomJoin, isJoin);
+    socket.join(payload.roomId);
   });
-
-  socket.on(SocketEvent.RoomJoin, async(payload: IRoom) => {
-    const { id } = payload;
-    socket.join(id);
-    socket.emit(SocketEvent.RoomJoin);
-  });
-
-  socket.on(SocketEvent.RoomLeave, async(payload: IRoom) => {
-    const { id } = payload;
-    socket.leave(id);
-    socket.emit(SocketEvent.RoomLeave);
+  socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
+    const userId = await roomService.leaveRoom(payload);
+    if (userId instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(userId);
+    }
+    socket.leave(payload.roomId);
+    socket.to(payload.roomId).emit(SocketEvent.RoomLeave, userId);
   });
   /* ---------- End events for Room ------------ */
 
