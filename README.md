@@ -2,14 +2,15 @@
 
 Routes for FE:
 
-| route                     | description                     | request | response |
-| ------------------------- | ------------------------------- | -------- | --------- |
-| /api/tasks?roomId=uuid    | get all tasks from room uuid    |  | {id, title, description, roomId, score, avg_score, is_active } |
-| /api/messages?roomId=uuid | get all messages from room uuid |  | { id, text,  date, userId, roomId, name }: ISendMessage[] |
-| /api/rooms/create         | create room                     | { title } | { id, title } |
-| /api/rooms/:uuid          | get room by id                  |  | { id, titlee, state? } ? |
-| /api/users?roomId=uuid    | get all users from room *       | | {id, role, name, roomId} : IUser[] |
-| /api/users/:id            | get user by his id              | { id } | { id: number, name: string } |
+| route                     | | description                     | request | response |
+| ------------------------- | - | ------------------------------- | -------- | --------- |
+| /api/tasks?roomId=uuid    | GET | get all tasks from room uuid    |  | {id, title, description, roomId, score, avg_score, is_active } |
+| /api/messages?roomId=uuid | GET | get all messages from room uuid |  | { id, text,  date, userId, roomId, name }: ISendMessage[] |
+| /api/rooms/               | POST | create room                     | { title } | { id, title } |
+| /api/rooms/:uuid          | GET | get room by id                  |  | { id, titlee, state? } ? |
+| /api/users?roomId=uuid    | GET | get all users from room       | | {id, role, name, roomId} : IUser[] |
+| /api/users/:id            | GET| get user by his id              |  | { id: number, name: string } |
+| /api/users/               | POST | create room                     | { title } | { id, title } |
 
 Socket events:
 
