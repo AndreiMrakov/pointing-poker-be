@@ -6,8 +6,8 @@ import { userRouter } from './userRouter';
 
 export const router = Router();
 
-router.use('/room', roomRouter);
-router.use('/task', routerTask);
+router.use('/rooms', roomRouter);
+router.use('/tasks', routerTask);
 router.use('/messages', messageRouter);
 router.use('/users', userRouter);
 
