@@ -1,4 +1,4 @@
-import { RoomState, Task, UserRoomRole, Room } from '@/models';
+import { RoomState, UserRoomRole, Room } from '@/models';
 import { BadRequestError, HttpError } from '@/error';
 import { RoomStateTitle } from '@/utils/enums';
 import { IJoinRoom, IRoom, IRoomState } from '@/utils/interfaces';
@@ -83,6 +83,6 @@ class RoomService {
     }
     return new BadRequestError(`Not found state for title: ${title}.`);
   }
-};
+}
 
 export const roomService = new RoomService();
