@@ -10,25 +10,25 @@ Routes for FE:
 | /api/rooms/:uuid          | GET | get room by id                  |  | { id, titlee, state? } ? |
 | /api/users?roomId=uuid    | GET | get all users from room       | | {id, role, name, roomId} : IUser[] |
 | /api/users/:id            | GET| get user by his id              |  | { id: number, name: string } |
-| /api/users/               | POST | create room                     | { title } | { id, title } |
+| /api/users/               | POST | create room                     | { name } | { id, name } |
 
 Socket events:
 
-| Event name        | description                                                |
-| ----------------- | ---------------------------------------------------------- |
-| 'task_create'     | request from FE to create task to room                     |
-| 'task_delete'     | request from FE to delete task to all users                |
-| 'task_set_score'  | request from FE to update score task to all room users     |
-| 'task_set_active' | request from FE to update is_active task to all room users |
-| 'message_create'  | request from FE to add new message to room                                         |
-| 'room_create'     | request from FE to create new room                         |
-| 'room_join'       | request from FE to join user in room                       |
-| 'room_leave'      | request from FE to leave user in room                      |
-| 'room_start'      | request from FE to start game to room (id room)                                    |
-| 'room_finish'     | request from FE to finish game to room (id room)                                   |
-| 'room_restart'    | request from FE to restart game to room (id room)                                  |
-| 'user_vote'        | request from FE to update score user to user score (userId, taskId, score, roomId) |
-| 'error_not_data' | request from FE for sender to error |
+| Event name        | description                                                |  request | response  |
+| ----------------- | ---------------------------------------------------------- | -------- | --------- |
+| 'task_create'     | request from FE to create task to room                     | { title, description?, roomId }: ITask | {id, title, description, roomId, score, avg_score, is_active } |
+| 'task_delete'     | request from FE to delete task to all users                | { id } | { true } |
+| 'task_set_score'  | request from FE to update score task to all room users     | { id, score }: ITask | {id, title, description, roomId, score, avg_score, is_active } |
+| 'task_set_active' | request from FE to update is_active task to all room users | { id } | {id, title, description, roomId, score, avg_score, is_active } |
+| 'message_create'  | request from FE to add new message to room                 | { text, roomId, userId }: IMessage | { id, text, roomId, userId } |
+| 'room_create'     | request from FE to create new room                         | { title } | { id, title} |
+| 'room_join'       | request from FE to join user in room                       | { roomId, userId, roleId? }: IJoinRoom | { userId } or { name } ? |
+| 'room_leave'      | request from FE to leave user in room                      | { roomId, userId }: IJoinRoom | { userId } or { name } ? |
+| 'room_start'      | request from FE to start game to room (id room)            | { id } | { id, title }: IRoomState |
+| 'room_finish'     | request from FE to finish game to room (id room)           | { id } | { id, title }: IRoomState |
+| 'room_restart'    | request from FE to restart game to room (id room)          | { id } | { id, title }: IRoomState |
+| 'user_vote'        | request from FE to update score user to user score        | { userId, taskId, score }: IUserScore | { userId, taskId, score }: IUserScore |
+| 'error_not_data' | request from FE for sender to error | | { message: 'Not found payload' } |
 
 Backend part for Pointing Poker  
 Staging: https://pointing-poker-app-be.herokuapp.com
