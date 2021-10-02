@@ -16,7 +16,7 @@ class RoomService {
         roleId
       });
 
-      return !!result;
+      return userId; //or return name user?
     } catch(err) {
       return new BadRequestError(`Error join to room. ${err}`);
     }
@@ -28,7 +28,7 @@ class RoomService {
         where: { userId, roomId  },
       });
 
-      return userId; // or return name?
+      return userId; // or return name user?
     } catch(e) {
       return new BadRequestError(`Error leave User ${userId}. ${e}`);
     }

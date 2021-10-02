@@ -79,12 +79,12 @@ io.on('connection', (socket) => {
     socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
-    const isJoin = await roomService.joinRoom(payload);
-    if (isJoin instanceof HttpError) {
+    const userId = await roomService.joinRoom(payload);
+    if (userId instanceof HttpError) {
       // TODO: add logger to file
-      return console.log(isJoin);
+      return console.log(userId);
     }
-    socket.to(payload.roomId).emit(SocketEvent.RoomJoin, isJoin);
+    socket.to(payload.roomId).emit(SocketEvent.RoomJoin, userId);
     socket.join(payload.roomId);
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
