@@ -1,6 +1,6 @@
 export interface IUser {
   id: number;
-  roomId: string;
-  role?: string;
   name: string;
+  role?: string;
+  score?: string;
 }

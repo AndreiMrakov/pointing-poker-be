@@ -8,9 +8,9 @@ Routes for FE:
 | /api/messages?roomId=uuid | GET | get all messages from room uuid |  | { id, text,  date, userId, roomId, name }: ISendMessage[] |
 | /api/rooms/               | POST | create room                     | { title } | { id, title, state, roomStateId }: IRoom |
 | /api/rooms/:uuid          | GET | get room by id                  |  | { id, title, state, roomStateId }: IRoom |
-| /api/users?roomId=uuid    | GET | get all users from room       | | {id, role, name, roomId} : IUser[] |
-| /api/users/:id            | GET| get user by his id              |  | { id: number, name: string } |
-| /api/users/               | POST | create room                     | { name } | { id, name } |
+| /api/users?roomId=uuid    | GET | get all users from room       | | {id, role, name, score} : IUser[] |
+| /api/users/:id            | GET| get user by his id              |  | { id, name }: IUser |
+| /api/users/               | POST | create room                     | { name } | { id, name }: IUser |
 
 Socket events:
 
