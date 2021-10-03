@@ -39,7 +39,7 @@ class RoomService {
       const roleModel = await Role.findByPk(newRoleId);
       const role = roleModel?.toJSON() as IRole;
 
-      return  <IUser>{
+      return <IUser>{
         id: user.id,
         name: user.name,
         role: role.title,
@@ -51,11 +51,11 @@ class RoomService {
 
   async leaveRoom({ roomId, userId }: IJoinRoom) {
     try {
-      await UserRoomRole.destroy({
+      const result = await UserRoomRole.destroy({
         where: { userId, roomId  },
       });
-
-      return userId; // or return name user?
+      console.log(result)
+      return !!result && await User.findByPk(userId);
     } catch(e) {
       return new BadRequestError(`Error leave User ${userId}. ${e}`);
     }

@@ -79,22 +79,22 @@ io.on('connection', (socket) => {
     socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
-    const userId = await roomService.joinRoom(payload);
-    if (userId instanceof HttpError) {
+    const user = await roomService.joinRoom(payload);
+    if (user instanceof HttpError) {
       // TODO: add logger to file
-      return console.log(userId);
+      return console.log(user);
     }
-    socket.to(payload.roomId).emit(SocketEvent.RoomJoin, userId);
+    socket.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
     socket.join(payload.roomId);
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
-    const userId = await roomService.leaveRoom(payload);
-    if (userId instanceof HttpError) {
+    const user = await roomService.leaveRoom(payload);
+    if (user instanceof HttpError) {
       // TODO: add logger to file
-      return console.log(userId);
+      return console.log(user);
     }
     socket.leave(payload.roomId);
-    socket.to(payload.roomId).emit(SocketEvent.RoomLeave, userId);
+    socket.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
   });
   /* ---------- End events for Room ------------ */
 
