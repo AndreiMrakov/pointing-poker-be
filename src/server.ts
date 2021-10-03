@@ -135,12 +135,12 @@ io.on('connection', (socket) => {
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
-    const result = await taskService.deleteTaskById(payload);
-    if (result instanceof HttpError) {
+    const id = await taskService.deleteTaskById(payload);
+    if (id instanceof HttpError) {
       // TODO: add logger to file
-      return console.log(result);
+      return console.log(id);
     }
-    socket.emit(SocketEvent.TaskDelete);
+    socket.emit(SocketEvent.TaskDelete, id);
   });
   /* ---------- End events for Tasks ------------ */
 

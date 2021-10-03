@@ -73,7 +73,7 @@ class TaskService {
         where: { id },
       });
 
-      return true;
+      return id;
     } catch(e) {
       return new BadRequestError(`Error destroyed Task id=${id}. ${e}`);
     }
