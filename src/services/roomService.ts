@@ -1,6 +1,6 @@
 import { RoomState, UserRoomRole, Room, User, Role, UserScore } from '@/models';
 import { BadRequestError, HttpError } from '@/error';
-import { RoomStateTitle } from '@/utils/enums';
+import { RoleTitle, RoomStateTitle } from '@/utils/enums';
 import { IJoinRoom, IRole, IRoom, IRoomState, IUser } from '@/utils/interfaces';
 
 class RoomService {
@@ -20,29 +20,27 @@ class RoomService {
     return result;
   }
 
-  async joinRoom({ roomId, userId, roleId }: IJoinRoom) {
+  async joinRoom({ roomId, userId }: IJoinRoom) {
     try {
       const count = await UserRoomRole.count({
         where: { roomId },
       });
 
-      const newRoleId = !count ? 1 : (roleId || 2);
+      const roleId = !count ? RoleTitle.admin : null;
 
       await UserRoomRole.create({
         roomId,
         userId,
-        newRoleId,
+        roleId,
       });
 
       const userModel = await User.findByPk(userId);
       const user = userModel?.toJSON() as IUser;
-      const roleModel = await Role.findByPk(newRoleId);
-      const role = roleModel?.toJSON() as IRole;
 
       return <IUser>{
         id: user.id,
         name: user.name,
-        role: role.title,
+        role: roleId ? 'admin' : null,
       }
     } catch(err) {
       return new BadRequestError(`Error join to room. ${err}`);

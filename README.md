@@ -21,7 +21,7 @@ Socket events:
 | 'task_set_score'  | request from FE to update score task to all room users     | { id, score }: ITask | {id, title, description, roomId, score, avg_score, is_active, createdAt }: ITask |
 | 'task_set_active' | request from FE to update is_active task to all room users | { id } | {id, title, description, roomId, score, avg_score, is_active, createdAt }: ITask |
 | 'message_create'  | request from FE to add new message to room                 | { text, roomId, userId }: IMessage |  { id, text,  date, userId, roomId, name }: ISendMessage |
-| 'room_join'       | request from FE to join user in room                       | { roomId, userId, roleId? }: IJoinRoom | {id, role, name}: IUser |
+| 'room_join'       | request from FE to join user in room                       | { roomId, userId }: IJoinRoom | {id, role, name}: IUser |
 | 'room_leave'      | request from FE to leave user in room                      | { roomId, userId }: IJoinRoom | {id, name}: IUser or { false } |
 | 'room_start'      | request from FE to start game to room (id room)            | { id } | { id, title }: IRoomState |
 | 'room_finish'     | request from FE to finish game to room (id room)           | { id } | { id, title }: IRoomState |
