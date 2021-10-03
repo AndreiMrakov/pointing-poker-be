@@ -3,8 +3,8 @@ export interface ITask {
   title: string,
   roomId: string,
   description?: string,
-  is_active?: boolean,
+  isActive?: boolean,
   score?: number,
-  avg_score?: number,
+  avgScore?: number,
   createdAt: Date,
 }
