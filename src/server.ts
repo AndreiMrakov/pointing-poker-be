@@ -13,6 +13,7 @@ import { roomService, userService, messageService, taskService } from '@/service
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
+import { logger } from './logger';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -57,24 +58,21 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
     const roomState = await roomService.startGame(payload);
     if (roomState instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(roomState);
+      return logger.error(roomState);
     }
     socket.to(payload.id).emit(SocketEvent.GameStart, roomState);
   });
   socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
     const roomState = await roomService.restartGame(payload);
     if (roomState instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(roomState);
+      return logger.error(roomState);
     }
     socket.to(payload.id).emit(SocketEvent.GameRestart, roomState);
   });
   socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
     const roomState = await roomService.finishGame(payload);
     if (roomState instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(roomState);
+      return logger.error(roomState);
     }
     socket.to(payload.id).emit(SocketEvent.GameFinish, roomState);
   });
@@ -84,8 +82,7 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
     const userScore = await userService.userVote(payload);
     if (userScore instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(userScore);
+      return logger.error(userScore);
     }
     socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
   });
@@ -95,32 +92,28 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
     const task = await taskService.createTask(payload);
     if (task instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(task);
+      return logger.error(task);
     }
     socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
   });
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
     const task = await taskService.setScoreTask(payload);
     if (task instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(task);
+      return logger.error(task);
     }
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
   });
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
     const task = await taskService.setActiveTask(payload);
     if (task instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(task);
+      return logger.error(task);
     }
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
     const result = await taskService.deleteTaskById(payload);
     if (result instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(result);
+      return logger.error(result);
     }
     socket.emit(SocketEvent.TaskDelete);
   });
@@ -130,8 +123,7 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
     const message = await messageService.createMessage(payload);
     if (message instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(message);
+      return logger.error(message);
     }
     socket.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
@@ -147,8 +139,8 @@ io.on('connection', (socket) => {
     await sequelize.authenticate();
     await sequelize.sync();
     await runAllSeeds();
-    server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
+    server.listen(PORT, () => logger.info(`Server started at localhost:${PORT}`));
   } catch(e) {
-     console.log(e);
+    logger.error(e);
   }
 })();
