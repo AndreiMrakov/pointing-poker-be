@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from 'winston';
-import { buildDevTransports } from './buildDevLogger';
-import { buildProdTransports } from './buildProdLogger';
+
+const logLevel = process.env.NODE_ENV === 'production' ? 'error' : 'info';
 
 export const logger = createLogger({
   transports: [
@@ -13,7 +13,7 @@ export const logger = createLogger({
           format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
       )
     }), */
-    process.env.NODE_ENV === 'production' ? buildProdTransports() : buildDevTransports(),
+    new transports.Console({ level: logLevel }),
   ],
   format:format.combine(
     format.colorize(),
