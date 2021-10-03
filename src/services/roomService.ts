@@ -59,7 +59,7 @@ class RoomService {
     }
   }
 
-  async getRoom(id: string) {
+  async getRoomById(id: string) {
     const room = await Room.findByPk(id);
 
     const tempRoom = room?.toJSON() as IRoom;

@@ -9,21 +9,21 @@ class RoomController {
       return next(new NotFoundError('Not found room title'));
     }
     try {
-      const tasks = await roomService.createRoom(title);
+      const room = await roomService.createRoom(title);
 
-      res.json(tasks);
+      res.json(room);
     } catch(err) {
       return next(new BadRequestError(`Wrong room. ${err}`));
     }
   }
 
-  async getRoom(req: Request, res: Response, next: NextFunction) {
+  async getRoomById(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     if (!id) {
       return next(new NotFoundError('Not found room id'));
     }
     try {
-      const room = await roomService.getRoom(id);
+      const room = await roomService.getRoomById(id);
       res.json(room);
     } catch(err) {
       return next(new BadRequestError(`Wrong room. ${err}`));
