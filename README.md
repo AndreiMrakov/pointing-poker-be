@@ -20,7 +20,7 @@ Socket events:
 | 'task_delete'     | request from FE to delete task to all users                | { id } | { id } |
 | 'task_set_score'  | request from FE to update score task to all room users     | { id, score }: ITask | {id, title, description, roomId, score, avg_score, is_active, createdAt }: ITask |
 | 'task_set_active' | request from FE to update is_active task to all room users | { id } | {id, title, description, roomId, score, avg_score, is_active, createdAt }: ITask |
-| 'message_create'  | request from FE to add new message to room                 | { text, roomId, userId }: IMessage | { id, text, roomId, userId } |
+| 'message_create'  | request from FE to add new message to room                 | { text, roomId, userId }: IMessage |  { id, text,  date, userId, roomId, name }: ISendMessage |
 | 'room_create'     | request from FE to create new room                         | { title } | { id, title} |
 | 'room_join'       | request from FE to join user in room                       | { roomId, userId, roleId? }: IJoinRoom | { userId } or { name } ? |
 | 'room_leave'      | request from FE to leave user in room                      | { roomId, userId }: IJoinRoom | { userId } or { name } ? |
