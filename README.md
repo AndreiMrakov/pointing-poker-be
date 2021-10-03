@@ -4,7 +4,7 @@ Routes for FE:
 
 | route                     | | description                     | request | response |
 | ------------------------- | - | ------------------------------- | -------- | --------- |
-| /api/tasks?roomId=uuid    | GET | get all tasks from room uuid    |  | {id, title, description, roomId, score, avg_score, is_active } |
+| /api/tasks?roomId=uuid    | GET | get all tasks from room uuid    |  | {id, title, description, roomId, score, avg_score, is_active, createdAt }: ITask |
 | /api/messages?roomId=uuid | GET | get all messages from room uuid |  | { id, text,  date, userId, roomId, name }: ISendMessage[] |
 | /api/rooms/               | POST | create room                     | { title } | { id, title, state, roomStateId }: IRoom |
 | /api/rooms/:uuid          | GET | get room by id                  |  | { id, title, state, roomStateId }: IRoom |

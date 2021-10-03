@@ -6,6 +6,9 @@ class TaskService {
   async getAllTasks(roomId: string) {
     const tasks = await Task.findAll({
       where: { roomId },
+      attributes: {
+        exclude: ['updatedAt']
+      },
     });
 
     return tasks;
