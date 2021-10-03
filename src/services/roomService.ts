@@ -5,7 +5,19 @@ import { IJoinRoom, IRoom, IRoomState } from '@/utils/interfaces';
 
 class RoomService {
   async createRoom(title: string) {
-    return Room.create({ title });
+    const room = await Room.create({ title });
+    const tempRoom = room.toJSON() as IRoom;
+    const state = await RoomState.findByPk(tempRoom.roomStateId);
+    const tempState = state?.toJSON() as IRoomState;
+
+    const result: IRoom = {
+      id: tempRoom.id,
+      title: tempRoom.title,
+      state: tempState.title,
+      roomStateId: tempRoom.roomStateId,
+    }
+
+    return result;
   }
 
   async joinRoom({ roomId, userId, roleId }: IJoinRoom) {
@@ -35,10 +47,20 @@ class RoomService {
   }
 
   async getRoom(id: string) {
-    return await Room.findByPk(id, {
-      include: RoomState,
-    });
-    //TODO: responce norm view
+    const room = await Room.findByPk(id);
+
+    const tempRoom = room?.toJSON() as IRoom;
+    const state = await RoomState.findByPk(tempRoom.roomStateId);
+    const tempState = state?.toJSON() as IRoomState;
+
+    const result: IRoom = {
+      id: tempRoom.id,
+      title: tempRoom.title,
+      state: tempState.title,
+      roomStateId: tempRoom.roomStateId,
+    }
+
+    return result;    
   }
 
   async startRoom(room: IRoom) {
