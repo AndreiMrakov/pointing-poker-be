@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
       return console.log(user);
     }
     socket.join(payload.roomId);
-    socket.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
+    io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
     const user = await roomService.leaveRoom(payload);
@@ -151,7 +151,7 @@ io.on('connection', (socket) => {
       // TODO: add logger to file
       return console.log(message);
     }
-    socket.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
+    io.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
   /* ---------- End events for Message ------------ */
 
