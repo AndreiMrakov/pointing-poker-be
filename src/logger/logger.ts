@@ -1,10 +1,13 @@
 import { createLogger, format, transports } from 'winston';
 
 export const logger = createLogger({
-  format: format.combine(
-    format.timestamp(),
-    format.simple(),
-    format.errors({ stack: true }),
-  ),
-  transports: [new transports.Console()]
+  transports: [
+    new transports.File({
+      filename: 'LOG_LVL.log',
+      format:format.combine(
+          format.timestamp({format: 'MMM-DD-YYYY HH:mm:ss'}),
+          format.align(),
+          format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
+      )}),
+  ],
 });
