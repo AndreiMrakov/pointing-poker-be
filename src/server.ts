@@ -13,6 +13,7 @@ import { roomService, userService, messageService, taskService } from '@/service
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
+import { leaveUser, setAdminToUser } from './helper';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -79,20 +80,23 @@ io.on('connection', (socket) => {
     socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
-    const user = await roomService.joinRoom(payload);
-    if (user instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(user);
+    socket.data.roomId = payload.roomId;
+    socket.data.userId = payload.userId;
+    const isJoin = await userService.isJoin(payload.userId, payload.roomId);
+    if (!isJoin) {
+      const user = await roomService.joinRoom(payload);
+      if (user instanceof HttpError) {
+        // TODO: add logger to file
+        return console.log(user);
+      }
+      io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
     }
     socket.join(payload.roomId);
-    io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
-    const user = await roomService.leaveRoom(payload);
-    if (user instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(user);
-    }
+    const newAdmin = await setAdminToUser(payload.userId, payload.roomId);
+    const user = await leaveUser(payload.userId, payload.roomId);
+    newAdmin && socket.to(payload.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
     socket.leave(payload.roomId);
     socket.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
   });
@@ -155,8 +159,18 @@ io.on('connection', (socket) => {
   });
   /* ---------- End events for Message ------------ */
 
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
+  socket.on('disconnect', async () => {
+    setTimeout(async () => {
+      const isOnline = await userService.isOnline(socket.data.userId, socket.data.roomId);
+      if (!isOnline) {
+        const newAdmin = await setAdminToUser(socket.data.userId, socket.data.roomId);
+        const user = await leaveUser(socket.data.userId, socket.data.roomId);
+        newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
+        socket.leave(socket.data.roomId);
+        socket.to(socket.data.roomId).emit(SocketEvent.RoomLeave, user);
+      }
+    }, 10000)
+    
   });
 });
 

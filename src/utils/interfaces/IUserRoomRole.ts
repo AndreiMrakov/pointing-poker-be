@@ -3,6 +3,7 @@ export interface IUserRoomRole {
   userId: number;
   roomId: string;
   roleId: number;
+  is_online: boolean;
   user: { 
     name: string;
     id: number;

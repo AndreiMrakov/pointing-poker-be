@@ -41,6 +41,7 @@ class RoomService {
         id: user.id,
         name: user.name,
         role: roleId ? 'admin' : null,
+        isOnline: true,
       }
     } catch(err) {
       return new BadRequestError(`Error join to room. ${err}`);
@@ -49,11 +50,16 @@ class RoomService {
 
   async leaveRoom({ roomId, userId }: IJoinRoom) {
     try {
-      const result = await UserRoomRole.destroy({
-        where: { userId, roomId  },
+      const userInRoom = await UserRoomRole.findOne({
+        where: { userId, roomId },
+        include: {
+          model: Role,
+          attributes: ['title'],
+        }
       });
-      console.log(result)
-      return !!result && await User.findByPk(userId);
+
+      await userInRoom?.destroy()
+      return userId;
     } catch(e) {
       return new BadRequestError(`Error leave User ${userId}. ${e}`);
     }

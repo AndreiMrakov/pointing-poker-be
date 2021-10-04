@@ -7,6 +7,10 @@ export const UserRoomRole = sequelize.define('user_room_role', {
     primaryKey: true,
     autoIncrement: true,
   },
+  is_online: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
 }, {
   underscored: true,
   indexes: [
