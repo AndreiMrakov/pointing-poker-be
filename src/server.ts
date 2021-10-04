@@ -121,28 +121,28 @@ io.on('connection', (socket) => {
     if (task instanceof HttpError) {
       return console.log(task);
     }
-    socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
+    io.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
   });
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
     const task = await taskService.setScoreTask(payload);
     if (task instanceof HttpError) {
       return console.log(task);
     }
-    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
+    io.to(socket.data.roomId).emit(SocketEvent.TaskUpdateScore, task);
   });
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
     const task = await taskService.setActiveTask(payload);
     if (task instanceof HttpError) {
       return console.log(task);
     }
-    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
+    io.to(socket.data.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
     const id = await taskService.deleteTaskById(payload);
     if (id instanceof HttpError) {
       return console.log(id);
     }
-    socket.emit(SocketEvent.TaskDelete, id);
+    io.to(socket.data.roomId).emit(SocketEvent.TaskDelete, id);
   });
   /* ---------- End events for Tasks ------------ */
 

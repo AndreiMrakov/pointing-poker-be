@@ -4,7 +4,7 @@ export interface ITask {
   roomId: string,
   description?: string,
   is_active?: boolean,
-  score?: number,
+  score?: string,
   avg_score?: number,
   createdAt: Date,
 }
