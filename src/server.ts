@@ -13,7 +13,8 @@ import { roomService, userService, messageService, taskService } from '@/service
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
-import { leaveUser, setAdminToUser } from './helper';
+import { leaveUser, setAdminToUser } from '@/helper';
+import { logger } from '@/logger';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -58,21 +59,21 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.RoomStart, async (room: IRoom) => {
     const roomState = await roomService.startRoom(room);
     if (roomState instanceof HttpError) {
-      return console.log(roomState);
+      return logger.error(roomState);
     }
     socket.to(room.id).emit(SocketEvent.RoomStart, roomState);
   });
   socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
     const roomState = await roomService.restartRoom(room);
     if (roomState instanceof HttpError) {
-      return console.log(roomState);
+      return logger.error(roomState);
     }
     socket.to(room.id).emit(SocketEvent.RoomRestart, roomState);
   });
   socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
     const roomState = await roomService.finishRoom(room);
     if (roomState instanceof HttpError) {
-      return console.log(roomState);
+      return logger.error(roomState);
     }
     socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
   });
@@ -83,7 +84,7 @@ io.on('connection', (socket) => {
     if (!isJoin) {
       const user = await roomService.joinRoom(payload);
       if (user instanceof HttpError) {
-        return console.log(user);
+        return logger.error(user);
       }
       io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
     }
@@ -102,14 +103,14 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
     const userScore = await userService.userVote(payload);
     if (userScore instanceof HttpError) {
-      return console.log(userScore);
+      return logger.error(userScore);
     }
     socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
   });
   socket.on(SocketEvent.UserAddRole, async (payload: IJoinRoom) => {
     const userRole = await userService.setRoleToUser(payload);
     if (userRole instanceof HttpError) {
-      return console.log(userRole);
+      return logger.error(userRole);
     }
     socket.to(payload.roomId).emit(SocketEvent.UserAddRole, userRole);
   });
@@ -119,28 +120,28 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
     const task = await taskService.createTask(payload);
     if (task instanceof HttpError) {
-      return console.log(task);
+      return logger.error(task);
     }
     io.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
   });
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
     const task = await taskService.setScoreTask(payload);
     if (task instanceof HttpError) {
-      return console.log(task);
+      return logger.error(task);
     }
     io.to(socket.data.roomId).emit(SocketEvent.TaskUpdateScore, task);
   });
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
     const task = await taskService.setActiveTask(payload);
     if (task instanceof HttpError) {
-      return console.log(task);
+      return logger.error(task);
     }
     io.to(socket.data.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
     const id = await taskService.deleteTaskById(payload);
     if (id instanceof HttpError) {
-      return console.log(id);
+      return logger.error(id);
     }
     io.to(socket.data.roomId).emit(SocketEvent.TaskDelete, id);
   });
@@ -150,7 +151,7 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
     const message = await messageService.createMessage(payload);
     if (message instanceof HttpError) {
-      return console.log(message);
+      return logger.error(message);
     }
     io.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
@@ -176,8 +177,8 @@ io.on('connection', (socket) => {
     await sequelize.authenticate();
     await sequelize.sync();
     await runAllSeeds();
-    server.listen(PORT, () => console.log(`Server started at localhost:${PORT}`));
+    server.listen(PORT, () => logger.info(`Server started at localhost:${PORT}`));
   } catch(e) {
-     console.log(e);
+    logger.error(e);
   }
 })();
