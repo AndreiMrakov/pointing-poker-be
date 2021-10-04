@@ -1,6 +1,6 @@
 import { BadRequestError } from '@/error';
 import { Message, User } from '@/models';
-import { IMessage, IMessageFromDB, ISendMessage } from '@/utils/interfaces';
+import { IMessage, IMessageFromDB, ISendMessage, IUser } from '@/utils/interfaces';
 
 class MessageService {
   async getMessagesByRoomId(roomId: string) {
@@ -38,7 +38,20 @@ class MessageService {
         userId,
       });
 
-      return message;
+      const tempMsg = message.toJSON() as IMessageFromDB;
+      const user = await User.findByPk(tempMsg.userId);
+      const tempUser = user?.toJSON() as IUser;
+
+      const result: ISendMessage = {
+        "id": tempMsg.id,
+        "text": tempMsg.text,
+        "date": tempMsg.createdAt,
+        "userId": tempMsg.userId,
+        "roomId": tempMsg.roomId,
+        "name": tempUser.name,
+      };
+
+      return result;
     } catch(e) {
       return new BadRequestError(`Error in create Message. ${e}`);
     }

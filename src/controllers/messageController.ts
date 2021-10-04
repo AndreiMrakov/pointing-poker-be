@@ -13,8 +13,8 @@ class MessageController {
       const messages = await messageService.getMessagesByRoomId(String(roomId));
       
       res.json(messages);
-    } catch {
-      return next(new BadRequestError('Wrong room'));
+    } catch(err) {
+      return next(new BadRequestError('Wrong msg. ${err}'));
     }
   }
 };
