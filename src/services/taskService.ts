@@ -53,6 +53,13 @@ class TaskService {
 
   async setActiveTask({ id }: ITask) {
     try {
+      await Task.update(
+        { is_active: false },
+        {
+          where: { is_active: true },
+        }
+      );
+
       const [_, activeTasks] = await Task.update(
         { is_active: true },
         {
