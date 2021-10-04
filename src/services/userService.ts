@@ -1,7 +1,6 @@
 import { User, UserScore, Role, UserRoomRole } from "@/models";
 import { BadRequestError } from "@/error";
 import { IUserScore, IUserRoomRole, IUser } from "@/utils/interfaces";
-import { Model } from "sequelize/types";
 
 class UserService {
   async getUsersByRoomId(roomId: string) {
@@ -27,7 +26,7 @@ class UserService {
       return {
         id: temp.userId,
         name: temp.user.name,
-        role: temp.role.title,
+        role: temp.role?.title,
         roomId: temp.roomId,
       }
     });

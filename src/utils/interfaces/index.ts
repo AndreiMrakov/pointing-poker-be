@@ -7,3 +7,5 @@ export { IUserRoomRole } from './IUserRoomRole';
 export { IUser } from './IUser';
 export { ISendMessage } from './ISendMessage';
 export { IMessageFromDB } from './IMessageFromDB';
+export { IJoinRoom } from './IJoinRoom';
+export { IRole } from './IRole';

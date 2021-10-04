@@ -8,7 +8,7 @@ import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
-import { IRoom, IUserScore, IMessage, ITask } from '@/utils/interfaces';
+import { IRoom, IUserScore, IMessage, ITask, IJoinRoom } from '@/utils/interfaces';
 import { roomService, userService, messageService, taskService } from '@/services';
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
@@ -53,32 +53,50 @@ io.on('connection', (socket) => {
     return next(Error('Not found payload'));
   });
 
-  /* ---------- Events for Game ------------ */
-  socket.on(SocketEvent.GameStart, async (payload: IRoom) => {
-    const roomState = await roomService.startGame(payload);
+  /* ---------- Events for Room ------------ */
+  socket.on(SocketEvent.RoomStart, async (room: IRoom) => {
+    const roomState = await roomService.startRoom(room);
     if (roomState instanceof HttpError) {
       // TODO: add logger to file
       return console.log(roomState);
     }
-    socket.to(payload.id).emit(SocketEvent.GameStart, roomState);
+    socket.to(room.id).emit(SocketEvent.RoomStart, roomState);
   });
-  socket.on(SocketEvent.GameRestart, async (payload: IRoom) => {
-    const roomState = await roomService.restartGame(payload);
+  socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
+    const roomState = await roomService.restartRoom(room);
     if (roomState instanceof HttpError) {
       // TODO: add logger to file
       return console.log(roomState);
     }
-    socket.to(payload.id).emit(SocketEvent.GameRestart, roomState);
+    socket.to(room.id).emit(SocketEvent.RoomRestart, roomState);
   });
-  socket.on(SocketEvent.GameFinish, async (payload: IRoom) => {
-    const roomState = await roomService.finishGame(payload);
+  socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
+    const roomState = await roomService.finishRoom(room);
     if (roomState instanceof HttpError) {
       // TODO: add logger to file
       return console.log(roomState);
     }
-    socket.to(payload.id).emit(SocketEvent.GameFinish, roomState);
+    socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
   });
-  /* ---------- End events for Game ------------ */
+  socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
+    const user = await roomService.joinRoom(payload);
+    if (user instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(user);
+    }
+    socket.join(payload.roomId);
+    io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
+  });
+  socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
+    const user = await roomService.leaveRoom(payload);
+    if (user instanceof HttpError) {
+      // TODO: add logger to file
+      return console.log(user);
+    }
+    socket.leave(payload.roomId);
+    socket.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
+  });
+  /* ---------- End events for Room ------------ */
 
   /* ---------- Events for User ------------ */
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
@@ -117,12 +135,12 @@ io.on('connection', (socket) => {
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
-    const result = await taskService.deleteTaskById(payload);
-    if (result instanceof HttpError) {
+    const id = await taskService.deleteTaskById(payload);
+    if (id instanceof HttpError) {
       // TODO: add logger to file
-      return console.log(result);
+      return console.log(id);
     }
-    socket.emit(SocketEvent.TaskDelete);
+    socket.emit(SocketEvent.TaskDelete, id);
   });
   /* ---------- End events for Tasks ------------ */
 
@@ -133,7 +151,7 @@ io.on('connection', (socket) => {
       // TODO: add logger to file
       return console.log(message);
     }
-    socket.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
+    io.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
   });
   /* ---------- End events for Message ------------ */
 
