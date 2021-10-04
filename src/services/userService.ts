@@ -26,7 +26,7 @@ class UserService {
       return {
         id: temp.userId,
         name: temp.user.name,
-        role: temp.role.title,
+        role: temp.role?.title,
         roomId: temp.roomId,
       }
     });
