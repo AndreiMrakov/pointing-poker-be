@@ -58,7 +58,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.RoomStart, async (room: IRoom) => {
     const roomState = await roomService.startRoom(room);
     if (roomState instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(roomState);
     }
     socket.to(room.id).emit(SocketEvent.RoomStart, roomState);
@@ -66,7 +65,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
     const roomState = await roomService.restartRoom(room);
     if (roomState instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(roomState);
     }
     socket.to(room.id).emit(SocketEvent.RoomRestart, roomState);
@@ -74,7 +72,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
     const roomState = await roomService.finishRoom(room);
     if (roomState instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(roomState);
     }
     socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
@@ -86,7 +83,6 @@ io.on('connection', (socket) => {
     if (!isJoin) {
       const user = await roomService.joinRoom(payload);
       if (user instanceof HttpError) {
-        // TODO: add logger to file
         return console.log(user);
       }
       io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
@@ -106,10 +102,16 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.UserVote, async (payload: IUserScore) => {
     const userScore = await userService.userVote(payload);
     if (userScore instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(userScore);
     }
     socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+  });
+  socket.on(SocketEvent.UserAddRole, async (payload: IJoinRoom) => {
+    const userRole = await userService.setRoleToUser(payload);
+    if (userRole instanceof HttpError) {
+      return console.log(userRole);
+    }
+    socket.to(payload.roomId).emit(SocketEvent.UserAddRole, userRole);
   });
   /* ---------- End events for User ------------ */
 
@@ -117,7 +119,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskCreate, async (payload: ITask) => {
     const task = await taskService.createTask(payload);
     if (task instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(task);
     }
     socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
@@ -125,7 +126,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
     const task = await taskService.setScoreTask(payload);
     if (task instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(task);
     }
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
@@ -133,7 +133,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
     const task = await taskService.setActiveTask(payload);
     if (task instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(task);
     }
     socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
@@ -141,7 +140,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
     const id = await taskService.deleteTaskById(payload);
     if (id instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(id);
     }
     socket.emit(SocketEvent.TaskDelete, id);
@@ -152,7 +150,6 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.MessageCreate, async(payload: IMessage) => {
     const message = await messageService.createMessage(payload);
     if (message instanceof HttpError) {
-      // TODO: add logger to file
       return console.log(message);
     }
     io.to(payload.roomId).emit(SocketEvent.MessageCreate, message);
@@ -165,7 +162,7 @@ io.on('connection', (socket) => {
       if (!isOnline) {
         const newAdmin = await setAdminToUser(socket.data.userId, socket.data.roomId);
         const user = await leaveUser(socket.data.userId, socket.data.roomId);
-        newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
+        newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, { id: newAdmin });
         socket.leave(socket.data.roomId);
         socket.to(socket.data.roomId).emit(SocketEvent.RoomLeave, user);
       }

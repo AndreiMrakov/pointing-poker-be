@@ -1,7 +1,7 @@
 import { RoomState, UserRoomRole, Room, User, Role, UserScore } from '@/models';
 import { BadRequestError, HttpError } from '@/error';
 import { RoleTitle, RoomStateTitle } from '@/utils/enums';
-import { IJoinRoom, IRole, IRoom, IRoomState, IUser } from '@/utils/interfaces';
+import { IJoinRoom, IRoom, IRoomState, IUser } from '@/utils/interfaces';
 
 class RoomService {
   async createRoom(title: string) {
