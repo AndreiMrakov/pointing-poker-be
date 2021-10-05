@@ -30,6 +30,7 @@ Socket events:
 | 'user_add_role' | request from FE to update role user to room | { userId, roomId, role }: IJoinRoom |  {id, role, name, isOnline}: IUser |
 | 'room_admin' | request from FE to new admin to room | userId: number, roomId: string | { id } - user |
 | 'error_not_data' | request from FE for sender to error | | { message: 'Not found payload' } |
+| 'user_kick' | request from FE to kick user from room | { roomId, userId }: IJoinRoom | true |
 
 Backend part for Pointing Poker  
 Staging: https://pointing-poker-app-be.herokuapp.com

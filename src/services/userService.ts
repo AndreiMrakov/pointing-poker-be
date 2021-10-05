@@ -147,6 +147,20 @@ class UserService {
       return new BadRequestError(`Dont update role. ${err}.`);
     }
   }
+
+  async kickUser({ userId, roomId }: IJoinRoom) {
+    try {
+      await UserRoomRole.destroy({
+        where: {
+          userId,
+          roomId,
+        }
+      });
+      return true;
+    } catch (err) {
+      return new BadRequestError(`Dont kick user from room. ${err}.`);
+    }
+  }
 };
 
 export const userService = new UserService();

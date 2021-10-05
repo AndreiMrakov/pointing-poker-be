@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
     }
     io.to(socket.data.roomId).emit(SocketEvent.RoomStart, roomState);
   });
-  socket.on(SocketEvent.RoomShow, async (id: number) => {
+  socket.on(SocketEvent.RoomShow, async ({ id }) => {
     const roomState = await roomService.restartRoom(socket.data.roomId);
     const scoreTask = await taskService.avgScore(id);
     if (roomState instanceof HttpError || scoreTask instanceof HttpError) {
@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
     io.to(socket.data.roomId).emit(SocketEvent.TaskAvgScore, scoreTask);
     io.to(socket.data.roomId).emit(SocketEvent.RoomShow, roomState);
   });
-  socket.on(SocketEvent.RoomFinish, async (id: number) => {
+  socket.on(SocketEvent.RoomFinish, async ({ id }) => {
     const roomState = await roomService.finishRoom(socket.data.roomId);
     const resetScoreTask = await taskService.resetScoreIssue(id)
     if (roomState instanceof HttpError || resetScoreTask instanceof HttpError) {
@@ -116,6 +116,13 @@ io.on('connection', (socket) => {
       return logger.error(userRole);
     }
     io.to(socket.data.roomId).emit(SocketEvent.UserAddRole, userRole);
+  });
+  socket.on(SocketEvent.UserKick, async (payload: IJoinRoom) => {
+    const isKick = await userService.kickUser(payload);
+    if (isKick instanceof HttpError) {
+      return logger.error(isKick);
+    }
+    io.to(socket.data.roomId).emit(SocketEvent.UserKick, isKick);
   });
   /* ---------- End events for User ------------ */
 
