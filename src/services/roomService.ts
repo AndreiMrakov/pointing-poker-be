@@ -82,19 +82,19 @@ class RoomService {
     return result;    
   }
 
-  async startRoom(room: IRoom) {
-    const state = await this.getRoomStateByTitle(RoomStateTitle.run);
-    return this.updateRoomStateById(room.id, state);
-  }
-
-  async restartRoom(room: IRoom) {
+  async startRoom(room: string) {
     const state = await this.getRoomStateByTitle(RoomStateTitle.restart);
-    return this.updateRoomStateById(room.id, state);
+    return this.updateRoomStateById(room, state);
   }
 
-  async finishRoom(room: IRoom)  {
+  async restartRoom(room: string) {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.run);
+    return this.updateRoomStateById(room, state);
+  }
+
+  async finishRoom(room: string)  {
     const state = await this.getRoomStateByTitle(RoomStateTitle.finish);
-    return this.updateRoomStateById(room.id, state);
+    return this.updateRoomStateById(room, state);
   }
 
   private async updateRoomStateById(id: string, state: IRoomState | BadRequestError) {
