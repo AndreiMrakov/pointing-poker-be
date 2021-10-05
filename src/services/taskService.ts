@@ -126,7 +126,7 @@ class TaskService {
           },
         },
       );
-
+      return score;
     } catch (err) {
       return new BadRequestError(`Dont update avg score. ${err}.`);
     }
