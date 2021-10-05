@@ -7,7 +7,7 @@ export const UserScore = sequelize.define('user_score', {
     primaryKey: true,
     autoIncrement: true,
   },
-  score: DataTypes.INTEGER,
+  score: DataTypes.STRING,
 }, {
   underscored: true,
   indexes: [
