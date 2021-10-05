@@ -109,7 +109,7 @@ class RoomService {
         }
       );
 
-      return state;
+      return state.title;
     } catch(e) {
       return new BadRequestError(`Room id=${id} was not updated. ${e}.`);
     }

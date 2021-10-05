@@ -61,21 +61,21 @@ io.on('connection', (socket) => {
     if (roomState instanceof HttpError) {
       return logger.error(roomState);
     }
-    socket.to(room.id).emit(SocketEvent.RoomStart, roomState);
+    io.to(room.id).emit(SocketEvent.RoomStart, { roomState });
   });
   socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
     const roomState = await roomService.restartRoom(room);
     if (roomState instanceof HttpError) {
       return logger.error(roomState);
     }
-    socket.to(room.id).emit(SocketEvent.RoomRestart, roomState);
+    io.to(room.id).emit(SocketEvent.RoomRestart, { roomState });
   });
   socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
     const roomState = await roomService.finishRoom(room);
     if (roomState instanceof HttpError) {
       return logger.error(roomState);
     }
-    socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
+    io.to(room.id).emit(SocketEvent.RoomFinish, { roomState });
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
     socket.data.roomId = payload.roomId;
