@@ -8,7 +8,7 @@ import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
-import { IRoom, IUserScore, IMessage, ITask, IJoinRoom } from '@/utils/interfaces';
+import { IUserScore, IMessage, ITask, IJoinRoom } from '@/utils/interfaces';
 import { roomService, userService, messageService, taskService } from '@/services';
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
@@ -56,26 +56,29 @@ io.on('connection', (socket) => {
   });
 
   /* ---------- Events for Room ------------ */
-  socket.on(SocketEvent.RoomStart, async (room: IRoom) => {
-    const roomState = await roomService.startRoom(room);
+  socket.on(SocketEvent.RoomStart, async () => {
+    const roomState = await roomService.startRoom(socket.data.roomId);
     if (roomState instanceof HttpError) {
       return logger.error(roomState);
     }
-    io.to(room.id).emit(SocketEvent.RoomStart, { roomState });
+    io.to(socket.data.roomId).emit(SocketEvent.RoomStart, { roomState });
   });
-  socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
-    const roomState = await roomService.restartRoom(room);
-    if (roomState instanceof HttpError) {
+  socket.on(SocketEvent.RoomShow, async (id: number) => {
+    const roomState = await roomService.restartRoom(socket.data.roomId);
+    const scoreTask = await taskService.avgScore(id);
+    if (roomState instanceof HttpError || scoreTask instanceof HttpError) {
       return logger.error(roomState);
     }
-    io.to(room.id).emit(SocketEvent.RoomRestart, { roomState });
+    io.to(socket.data.roomId).emit(SocketEvent.TaskAvgScore, scoreTask);
+    io.to(socket.data.roomId).emit(SocketEvent.RoomShow, { roomState });
   });
-  socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
-    const roomState = await roomService.finishRoom(room);
-    if (roomState instanceof HttpError) {
+  socket.on(SocketEvent.RoomFinish, async (id: number) => {
+    const roomState = await roomService.finishRoom(socket.data.roomId);
+    const resetScoreTask = await taskService.resetScoreIssue(id)
+    if (roomState instanceof HttpError || resetScoreTask instanceof HttpError) {
       return logger.error(roomState);
     }
-    io.to(room.id).emit(SocketEvent.RoomFinish, { roomState });
+    io.to(socket.data.roomId).emit(SocketEvent.RoomFinish, { roomState });
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
     socket.data.roomId = payload.roomId;
