@@ -118,11 +118,11 @@ io.on('connection', (socket) => {
     io.to(socket.data.roomId).emit(SocketEvent.UserAddRole, userRole);
   });
   socket.on(SocketEvent.UserKick, async (payload: IJoinRoom) => {
-    const isKick = await userService.kickUser(payload);
-    if (isKick instanceof HttpError) {
-      return logger.error(isKick);
+    const userId = await userService.kickUser(payload);
+    if (userId instanceof HttpError) {
+      return logger.error(userId);
     }
-    io.to(socket.data.roomId).emit(SocketEvent.UserKick, isKick);
+    io.to(socket.data.roomId).emit(SocketEvent.UserKick, userId);
   });
   /* ---------- End events for User ------------ */
 

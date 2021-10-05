@@ -156,7 +156,7 @@ class UserService {
           roomId,
         }
       });
-      return true;
+      return userId;
     } catch (err) {
       return new BadRequestError(`Dont kick user from room. ${err}.`);
     }
