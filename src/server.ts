@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
     if (roomState instanceof HttpError) {
       return logger.error(roomState);
     }
-    io.to(socket.data.roomId).emit(SocketEvent.RoomStart, { roomState });
+    io.to(socket.data.roomId).emit(SocketEvent.RoomStart, roomState);
   });
   socket.on(SocketEvent.RoomShow, async (id: number) => {
     const roomState = await roomService.restartRoom(socket.data.roomId);
@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
       return logger.error(roomState);
     }
     io.to(socket.data.roomId).emit(SocketEvent.TaskAvgScore, scoreTask);
-    io.to(socket.data.roomId).emit(SocketEvent.RoomShow, { roomState });
+    io.to(socket.data.roomId).emit(SocketEvent.RoomShow, roomState);
   });
   socket.on(SocketEvent.RoomFinish, async (id: number) => {
     const roomState = await roomService.finishRoom(socket.data.roomId);
@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
     if (roomState instanceof HttpError || resetScoreTask instanceof HttpError) {
       return logger.error(roomState);
     }
-    io.to(socket.data.roomId).emit(SocketEvent.RoomFinish, { roomState });
+    io.to(socket.data.roomId).emit(SocketEvent.RoomFinish, roomState);
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
     socket.data.roomId = payload.roomId;
