@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
     const user = await leaveUser(payload.userId, payload.roomId);
     newAdmin && socket.to(payload.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
     socket.leave(payload.roomId);
-    socket.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
+    io.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
   });
   /* ---------- End events for Room ------------ */
 
@@ -105,14 +105,14 @@ io.on('connection', (socket) => {
     if (userScore instanceof HttpError) {
       return logger.error(userScore);
     }
-    socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+    io.to(socket.data.roomId).emit(SocketEvent.UserVote, userScore);
   });
   socket.on(SocketEvent.UserAddRole, async (payload: IJoinRoom) => {
     const userRole = await userService.setRoleToUser(payload);
     if (userRole instanceof HttpError) {
       return logger.error(userRole);
     }
-    socket.to(payload.roomId).emit(SocketEvent.UserAddRole, userRole);
+    io.to(socket.data.roomId).emit(SocketEvent.UserAddRole, userRole);
   });
   /* ---------- End events for User ------------ */
 
