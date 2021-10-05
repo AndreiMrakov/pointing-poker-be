@@ -1,8 +1,9 @@
-import { User, UserScore, Role, UserRoomRole } from "@/models";
+import { User, UserScore, Role, UserRoomRole, Task } from "@/models";
 import { BadRequestError } from "@/error";
 import { IUserScore, IUserRoomRole, IUser, IJoinRoom } from "@/utils/interfaces";
 import { RoleTitle } from "@/utils/enums";
 import { Op } from "sequelize";
+import { getAvgScore, getScore } from "@/helper";
 
 class UserService {
   async getUsersByRoomId(roomId: string) {
@@ -145,6 +146,51 @@ class UserService {
       }
     } catch (err) {
       return new BadRequestError(`Dont update role. ${err}.`);
+    }
+  }
+
+  async resetScoreIssue(id: number) {
+    try {
+      await UserScore.update(
+        {score: null},
+        {
+          where: {
+            taskId: id,
+          },
+        },
+      );
+    } catch (err) {
+      return new BadRequestError(`Dont reset score. ${err}.`);
+    }
+  }
+
+  async avgScore(id: number) {
+    try {
+      const scores = await UserScore.findAll(
+        {
+          where: {
+            taskId: id,
+          },
+          attributes: ['score'],
+        },
+      );
+      
+      const avgScore = getAvgScore(scores.map(score => (score.get('score') as string)));
+      const score = getScore(avgScore);
+      await Task.update(
+        {
+          avg_score: avgScore,
+          score: score,
+        },
+        {
+          where: {
+            id,
+          },
+        },
+      );
+
+    } catch (err) {
+      return new BadRequestError(`Dont update avg score. ${err}.`);
     }
   }
 };
