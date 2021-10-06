@@ -111,9 +111,9 @@ class UserService {
     }
   };
 
-  asyc setIsOnline(userId: number, roomId: string, isOnline = true) {
+  async setIsOnline(userId: number, roomId: string, isOnline = true) {
     try {
-      await UserRoomRole.update({
+      await UserRoomRole.update(
         { is_online: isOnline},
         {
           where: {
@@ -121,7 +121,7 @@ class UserService {
             roomId,
           },
         },
-      });
+      );
     } catch (err) {
       return new BadRequestError(`Not set online user. ${err}.`);
     }

@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
     } else {
       const online = await userService.setIsOnline(payload.userId, payload.roomId);
       if (online instanceof HttpError) {
-        return logger.error(user);
+        return logger.error(online);
       }
     }
     socket.join(payload.roomId);
@@ -172,7 +172,7 @@ io.on('connection', (socket) => {
   /* ---------- End events for Message ------------ */
 
   socket.on('disconnect', async () => {
-    await userService.isOnline(socket.data.userId, socket.data.roomId, false);
+    await userService.setIsOnline(socket.data.userId, socket.data.roomId, false);
     setTimeout(async () => {
       const isOnline = await userService.isOnline(socket.data.userId, socket.data.roomId);
       if (!isOnline) {
