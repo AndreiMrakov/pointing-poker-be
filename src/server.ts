@@ -175,6 +175,7 @@ io.on('connection', (socket) => {
     await userService.setIsOnline(socket.data.userId, socket.data.roomId, false);
     setTimeout(async () => {
       const isOnline = await userService.isOnline(socket.data.userId, socket.data.roomId);
+      console.log(isOnline, '-----------')
       if (!isOnline) {
         const newAdmin = await setAdminToUser(socket.data.userId, socket.data.roomId);
         const user = await leaveUser(socket.data.userId, socket.data.roomId);
@@ -182,8 +183,9 @@ io.on('connection', (socket) => {
         socket.to(socket.data.roomId).emit(SocketEvent.RoomLeave, user);
       }
     }, 2000)
+    socket.leave(socket.data.roomId);
   });
-  socket.leave(socket.data.roomId);
+
 });
 
 (async () => {
