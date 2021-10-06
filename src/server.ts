@@ -89,6 +89,11 @@ io.on('connection', (socket) => {
         return logger.error(user);
       }
       io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
+    } else {
+      const online = await userService.setIsOnline(payload.userId, payload.roomId);
+      if (online instanceof HttpError) {
+        return logger.error(user);
+      }
     }
     socket.join(payload.roomId);
   });
@@ -167,18 +172,18 @@ io.on('connection', (socket) => {
   /* ---------- End events for Message ------------ */
 
   socket.on('disconnect', async () => {
+    await userService.isOnline(socket.data.userId, socket.data.roomId, false);
     setTimeout(async () => {
       const isOnline = await userService.isOnline(socket.data.userId, socket.data.roomId);
       if (!isOnline) {
         const newAdmin = await setAdminToUser(socket.data.userId, socket.data.roomId);
         const user = await leaveUser(socket.data.userId, socket.data.roomId);
         newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, { id: newAdmin });
-        socket.leave(socket.data.roomId);
         socket.to(socket.data.roomId).emit(SocketEvent.RoomLeave, user);
       }
-    }, 10000)
-    
+    }, 2000)
   });
+  socket.leave(socket.data.roomId);
 });
 
 (async () => {
