@@ -28,7 +28,7 @@ class UserService {
       const temp = user.toJSON() as IUserRoomRole;
       const score = await UserScore.findOne({
         where:{
-          taskId,
+          taskId: taskId,
           userId: temp.userId,
         },
       });
