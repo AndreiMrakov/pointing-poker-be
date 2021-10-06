@@ -61,7 +61,8 @@ class UserService {
   };
 
   async createUser(name: string) {
-    return User.create({name});
+    const user = await User.create({name});
+    return user;
   }
 
   async userVote({ userId, taskId, score }: IUserScore) {

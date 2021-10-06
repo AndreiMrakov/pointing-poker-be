@@ -82,6 +82,7 @@ io.on('connection', (socket) => {
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
     socket.data.roomId = payload.roomId;
     socket.data.userId = payload.userId;
+    socket.join(payload.roomId);
     const isJoin = await userService.isJoin(payload.userId, payload.roomId);
     if (!isJoin) {
       const user = await roomService.joinRoom(payload);
@@ -89,13 +90,14 @@ io.on('connection', (socket) => {
         return logger.error(user);
       }
       io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
+      // io.to(socket.id).emit(SocketEvent.UserJoinNotify);
     } else {
       const online = await userService.setIsOnline(payload.userId, payload.roomId);
       if (online instanceof HttpError) {
         return logger.error(online);
       }
     }
-    socket.join(payload.roomId);
+    
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
     const newAdmin = await setAdminToUser(payload.userId, payload.roomId);
