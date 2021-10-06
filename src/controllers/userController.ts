@@ -5,7 +5,7 @@ import {NextFunction, Request, Response} from 'express';
 class UserController {
   async getAllUsers(req: Request, res: Response,  next: NextFunction) {
     try {
-      const { roomId, taskId } = req.query;
+      const { roomId } = req.query;
       if (!roomId) {
         return next(new NotFoundError('Not found room id'));
       }
