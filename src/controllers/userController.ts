@@ -10,7 +10,7 @@ class UserController {
         return next(new NotFoundError('Not found room id'));
       }
 
-      const users = await userService.getUsersByRoomId(String(roomId), Number(taskId));
+      const users = await userService.getUsersByRoomId(String(roomId));
 
       res.json(users);
     } catch(err) {

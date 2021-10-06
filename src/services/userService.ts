@@ -1,11 +1,11 @@
-import { User, UserScore, Role, UserRoomRole } from "@/models";
+import { User, UserScore, Role, UserRoomRole, Task } from "@/models";
 import { BadRequestError } from "@/error";
 import { IUserScore, IUserRoomRole, IUser, IJoinRoom } from "@/utils/interfaces";
 import { RoleTitle } from "@/utils/enums";
 import { Op } from "sequelize";
 
 class UserService {
-  async getUsersByRoomId(roomId: string, taskId: number) {
+  async getUsersByRoomId(roomId: string) {
     const users = await UserRoomRole.findAll({
       where: { roomId },
       attributes: {
@@ -22,13 +22,19 @@ class UserService {
         }
       ],
     });
+    const task = await Task.findOne({
+      where: {
+        roomId,
+        is_active: true,
+      },
+    });
 
     const usersToFE: IUser[] = [];
     await users.forEach(async (user) => {
       const temp = user.toJSON() as IUserRoomRole;
       const score = await UserScore.findOne({
         where:{
-          taskId: taskId,
+          taskId: task?.get('id'),
           userId: temp.userId,
         },
       });
