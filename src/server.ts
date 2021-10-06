@@ -178,7 +178,7 @@ io.on('connection', (socket) => {
       if (!isOnline) {
         const newAdmin = await setAdminToUser(socket.data.userId, socket.data.roomId);
         const user = await leaveUser(socket.data.userId, socket.data.roomId);
-        newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, { id: newAdmin });
+        newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
         socket.to(socket.data.roomId).emit(SocketEvent.RoomLeave, user);
       }
     }, 2000)
