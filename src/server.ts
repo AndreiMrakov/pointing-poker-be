@@ -63,16 +63,15 @@ io.on('connection', (socket) => {
     }
     io.to(socket.data.roomId).emit(SocketEvent.RoomStart, roomState);
   });
-  socket.on(SocketEvent.RoomShow, async ({ id }) => {
+  socket.on(SocketEvent.RoomShow, async (id) => {
     const roomState = await roomService.restartRoom(socket.data.roomId);
     const scoreTask = await taskService.avgScore(id);
     if (roomState instanceof HttpError || scoreTask instanceof HttpError) {
       return logger.error(roomState);
     }
-    // io.to(socket.data.roomId).emit(SocketEvent.TaskAvgScore, scoreTask);
     io.to(socket.data.roomId).emit(SocketEvent.RoomShow, { roomState, scoreTask });
   });
-  socket.on(SocketEvent.RoomFinish, async ({ id }) => {
+  socket.on(SocketEvent.RoomFinish, async (id) => {
     const roomState = await roomService.finishRoom(socket.data.roomId);
     const resetScoreTask = await taskService.resetScoreIssue(id)
     if (roomState instanceof HttpError || resetScoreTask instanceof HttpError) {
