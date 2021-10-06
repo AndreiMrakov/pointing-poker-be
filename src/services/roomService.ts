@@ -1,7 +1,7 @@
 import { RoomState, UserRoomRole, Room, User, Role, UserScore } from '@/models';
 import { BadRequestError, HttpError } from '@/error';
 import { RoleTitle, RoomStateTitle } from '@/utils/enums';
-import { IJoinRoom, IRole, IRoom, IRoomState, IUser } from '@/utils/interfaces';
+import { IJoinRoom, IRoom, IRoomState, IUser } from '@/utils/interfaces';
 
 class RoomService {
   async createRoom(title: string) {
@@ -41,6 +41,7 @@ class RoomService {
         id: user.id,
         name: user.name,
         role: roleId ? 'admin' : null,
+        isOnline: true,
       }
     } catch(err) {
       return new BadRequestError(`Error join to room. ${err}`);
@@ -49,11 +50,16 @@ class RoomService {
 
   async leaveRoom({ roomId, userId }: IJoinRoom) {
     try {
-      const result = await UserRoomRole.destroy({
-        where: { userId, roomId  },
+      const userInRoom = await UserRoomRole.findOne({
+        where: { userId, roomId },
+        include: {
+          model: Role,
+          attributes: ['title'],
+        }
       });
-      console.log(result)
-      return !!result && await User.findByPk(userId);
+
+      await userInRoom?.destroy()
+      return userId;
     } catch(e) {
       return new BadRequestError(`Error leave User ${userId}. ${e}`);
     }
@@ -76,19 +82,19 @@ class RoomService {
     return result;    
   }
 
-  async startRoom(room: IRoom) {
-    const state = await this.getRoomStateByTitle(RoomStateTitle.run);
-    return this.updateRoomStateById(room.id, state);
-  }
-
-  async restartRoom(room: IRoom) {
+  async startRoom(room: string) {
     const state = await this.getRoomStateByTitle(RoomStateTitle.restart);
-    return this.updateRoomStateById(room.id, state);
+    return this.updateRoomStateById(room, state);
   }
 
-  async finishRoom(room: IRoom)  {
+  async restartRoom(room: string) {
+    const state = await this.getRoomStateByTitle(RoomStateTitle.run);
+    return this.updateRoomStateById(room, state);
+  }
+
+  async finishRoom(room: string)  {
     const state = await this.getRoomStateByTitle(RoomStateTitle.finish);
-    return this.updateRoomStateById(room.id, state);
+    return this.updateRoomStateById(room, state);
   }
 
   private async updateRoomStateById(id: string, state: IRoomState | BadRequestError) {
@@ -103,7 +109,7 @@ class RoomService {
         }
       );
 
-      return state;
+      return state.title;
     } catch(e) {
       return new BadRequestError(`Room id=${id} was not updated. ${e}.`);
     }

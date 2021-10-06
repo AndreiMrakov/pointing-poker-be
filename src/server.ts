@@ -8,12 +8,13 @@ import { sequelize } from '@/models';
 import { runAllSeeds } from '@/seeders';
 import { socketEventValidator } from '@/validation';
 import { SocketEvent } from '@/utils/enums';
-import { IRoom, IUserScore, IMessage, ITask, IJoinRoom } from '@/utils/interfaces';
+import { IUserScore, IMessage, ITask, IJoinRoom } from '@/utils/interfaces';
 import { roomService, userService, messageService, taskService } from '@/services';
 import { router } from '@/routers';
 import { errorHandling } from '@/middleware';
 import { HttpError } from '@/error';
-import { logger } from './logger';
+import { leaveUser, setAdminToUser } from '@/helper';
+import { logger } from '@/logger';
 
 const LOG_LEVEL = process.env.LOG_LEVEL as string;
 
@@ -55,44 +56,55 @@ io.on('connection', (socket) => {
   });
 
   /* ---------- Events for Room ------------ */
-  socket.on(SocketEvent.RoomStart, async (room: IRoom) => {
-    const roomState = await roomService.startRoom(room);
+  socket.on(SocketEvent.RoomStart, async () => {
+    const roomState = await roomService.startRoom(socket.data.roomId);
     if (roomState instanceof HttpError) {
       return logger.error(roomState);
     }
-    socket.to(room.id).emit(SocketEvent.RoomStart, roomState);
+    io.to(socket.data.roomId).emit(SocketEvent.RoomStart, roomState);
   });
-  socket.on(SocketEvent.RoomRestart, async (room: IRoom) => {
-    const roomState = await roomService.restartRoom(room);
-    if (roomState instanceof HttpError) {
+  socket.on(SocketEvent.RoomShow, async (id) => {
+    const roomState = await roomService.restartRoom(socket.data.roomId);
+    const scoreTask = await taskService.avgScore(id);
+    if (roomState instanceof HttpError || scoreTask instanceof HttpError) {
       return logger.error(roomState);
     }
-    socket.to(room.id).emit(SocketEvent.RoomRestart, roomState);
+    io.to(socket.data.roomId).emit(SocketEvent.RoomShow, { roomState, scoreTask });
   });
-  socket.on(SocketEvent.RoomFinish, async (room: IRoom) => {
-    const roomState = await roomService.finishRoom(room);
-    if (roomState instanceof HttpError) {
+  socket.on(SocketEvent.RoomFinish, async (id) => {
+    const roomState = await roomService.finishRoom(socket.data.roomId);
+    const resetScoreTask = await taskService.resetScoreIssue(id)
+    if (roomState instanceof HttpError || resetScoreTask instanceof HttpError) {
       return logger.error(roomState);
     }
-    socket.to(room.id).emit(SocketEvent.RoomFinish, roomState);
+    io.to(socket.data.roomId).emit(SocketEvent.RoomFinish, roomState);
   });
   socket.on(SocketEvent.RoomJoin, async(payload: IJoinRoom) => {
-    const user = await roomService.joinRoom(payload);
-    if (user instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(user);
-    }
+    socket.data.roomId = payload.roomId;
+    socket.data.userId = payload.userId;
     socket.join(payload.roomId);
-    io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
+    const isJoin = await userService.isJoin(payload.userId, payload.roomId);
+    if (!isJoin) {
+      const user = await roomService.joinRoom(payload);
+      if (user instanceof HttpError) {
+        return logger.error(user);
+      }
+      io.to(payload.roomId).emit(SocketEvent.RoomJoin, user);
+      // io.to(socket.id).emit(SocketEvent.UserJoinNotify);
+    } else {
+      const online = await userService.setIsOnline(payload.userId, payload.roomId);
+      if (online instanceof HttpError) {
+        return logger.error(online);
+      }
+    }
+    
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
-    const user = await roomService.leaveRoom(payload);
-    if (user instanceof HttpError) {
-      // TODO: add logger to file
-      return console.log(user);
-    }
+    const newAdmin = await setAdminToUser(payload.userId, payload.roomId);
+    const user = await leaveUser(payload.userId, payload.roomId);
+    newAdmin && socket.to(payload.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
     socket.leave(payload.roomId);
-    socket.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
+    io.to(payload.roomId).emit(SocketEvent.RoomLeave, user);
   });
   /* ---------- End events for Room ------------ */
 
@@ -102,7 +114,21 @@ io.on('connection', (socket) => {
     if (userScore instanceof HttpError) {
       return logger.error(userScore);
     }
-    socket.to(payload.roomId).emit(SocketEvent.UserVote, userScore);
+    io.to(socket.data.roomId).emit(SocketEvent.UserVote, userScore);
+  });
+  socket.on(SocketEvent.UserAddRole, async (payload: IJoinRoom) => {
+    const userRole = await userService.setRoleToUser(payload);
+    if (userRole instanceof HttpError) {
+      return logger.error(userRole);
+    }
+    io.to(socket.data.roomId).emit(SocketEvent.UserAddRole, userRole);
+  });
+  socket.on(SocketEvent.UserKick, async (payload: IJoinRoom) => {
+    const userId = await userService.kickUser(payload);
+    if (userId instanceof HttpError) {
+      return logger.error(userId);
+    }
+    io.to(socket.data.roomId).emit(SocketEvent.UserKick, userId);
   });
   /* ---------- End events for User ------------ */
 
@@ -112,28 +138,28 @@ io.on('connection', (socket) => {
     if (task instanceof HttpError) {
       return logger.error(task);
     }
-    socket.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
+    io.to(payload.roomId).emit(SocketEvent.TaskCreate, task);
   });
   socket.on(SocketEvent.TaskUpdateScore, async (payload: ITask) => {
     const task = await taskService.setScoreTask(payload);
     if (task instanceof HttpError) {
       return logger.error(task);
     }
-    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateScore, task);
+    io.to(socket.data.roomId).emit(SocketEvent.TaskUpdateScore, task);
   });
   socket.on(SocketEvent.TaskUpdateActive, async (payload: ITask) => {
     const task = await taskService.setActiveTask(payload);
     if (task instanceof HttpError) {
       return logger.error(task);
     }
-    socket.to(payload.roomId).emit(SocketEvent.TaskUpdateActive, task);
+    io.to(socket.data.roomId).emit(SocketEvent.TaskUpdateActive, task);
   });
   socket.on(SocketEvent.TaskDelete, async (payload: ITask) => {
     const id = await taskService.deleteTaskById(payload);
     if (id instanceof HttpError) {
       return logger.error(id);
     }
-    socket.emit(SocketEvent.TaskDelete, id);
+    io.to(socket.data.roomId).emit(SocketEvent.TaskDelete, id);
   });
   /* ---------- End events for Tasks ------------ */
 
@@ -147,9 +173,20 @@ io.on('connection', (socket) => {
   });
   /* ---------- End events for Message ------------ */
 
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('message', `A user ${socket.id} disconnected`);
+  socket.on('disconnect', async () => {
+    await userService.setIsOnline(socket.data.userId, socket.data.roomId, false);
+    setTimeout(async () => {
+      const isOnline = await userService.isOnline(socket.data.userId, socket.data.roomId);
+      if (!isOnline) {
+        const newAdmin = await setAdminToUser(socket.data.userId, socket.data.roomId);
+        const user = await leaveUser(socket.data.userId, socket.data.roomId);
+        newAdmin && socket.to(socket.data.roomId).emit(SocketEvent.RoomAdmin, newAdmin);
+        socket.to(socket.data.roomId).emit(SocketEvent.RoomLeave, user);
+      }
+    }, 2000)
+    socket.leave(socket.data.roomId);
   });
+
 });
 
 (async () => {

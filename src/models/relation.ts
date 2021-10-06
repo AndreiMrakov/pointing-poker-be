@@ -16,7 +16,7 @@ UserScore.belongsTo(User);
 User.hasMany(Message, {foreignKey: { allowNull: false }});
 Message.belongsTo(User);
 
-RoomState.hasMany(Room, {foreignKey: { defaultValue: 1, allowNull: false } });
+RoomState.hasMany(Room, {foreignKey: { defaultValue: 3, allowNull: false } });
 Room.belongsTo(RoomState);
 
 Room.hasMany(Task, {foreignKey: { allowNull: false }});
