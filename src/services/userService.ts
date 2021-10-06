@@ -28,24 +28,26 @@ class UserService {
         is_active: true,
       },
     });
-
-    const usersToFE: IUser[] = [];
-    await users.forEach(async (user) => {
+    
+    const usersToFE = await Promise.all(users.map(async(user) => {
       const temp = user.toJSON() as IUserRoomRole;
-      const score = await UserScore.findOne({
+      let score;
+      if(task) {
+      score = await UserScore.findOne({
         where:{
           taskId: task?.get('id'),
           userId: temp.userId,
         },
       });
-      usersToFE.push({
+      }
+      return {
         id: temp.userId,
         name: temp.user.name,
         role: temp.role?.title,
         isOnline: temp.is_online,
         score: score?.get('score') as string || null,
-      });
-    });
+      }
+    }))
 
     return usersToFE;
   }
