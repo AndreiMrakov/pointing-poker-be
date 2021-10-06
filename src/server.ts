@@ -23,7 +23,7 @@ const PORT = process.env.PORT;
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Hello from Express');
+  res.send('Pointing Poker BE');
 });
 
 app.use(cors());
@@ -97,7 +97,7 @@ io.on('connection', (socket) => {
         return logger.error(online);
       }
     }
-    
+
   });
   socket.on(SocketEvent.RoomLeave, async(payload: IJoinRoom) => {
     const newAdmin = await setAdminToUser(payload.userId, payload.roomId);
