@@ -5,7 +5,7 @@ import { RoleTitle } from "@/utils/enums";
 import { Op } from "sequelize";
 
 class UserService {
-  async getUsersByRoomId(roomId: string) {
+  async getUsersByRoomId(roomId: string, taskId: number) {
     const users = await UserRoomRole.findAll({
       where: { roomId },
       attributes: {
@@ -23,14 +23,22 @@ class UserService {
       ],
     });
 
-    const usersToFE: IUser[] = users.map(user => {
+    const usersToFE: IUser[] = [];
+    await users.forEach(async (user) => {
       const temp = user.toJSON() as IUserRoomRole;
-      return {
+      const score = await UserScore.findOne({
+        where:{
+          taskId,
+          userId: temp.userId,
+        },
+      });
+      usersToFE.push({
         id: temp.userId,
         name: temp.user.name,
         role: temp.role?.title,
         isOnline: temp.is_online,
-      }
+        score: score?.get('score') as string || null,
+      });
     });
 
     return usersToFE;

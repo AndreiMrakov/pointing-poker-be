@@ -3,4 +3,5 @@ export interface IUser {
   name: string;
   role?: string;
   isOnline: boolean;
+  score: string | null;
 }
