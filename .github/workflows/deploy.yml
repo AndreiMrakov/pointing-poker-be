@@ -1,0 +1,47 @@
+name: Deploy for BE
+
+on:
+  push:
+    branches: [develop, main]
+
+jobs:
+  test:
+    name: Test BE
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Pull branch
+      - name: Install dependencies
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: install
+      - name: Checking test
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: test -- --passWithNoTests
+  deploy:
+    needs: test
+    name: Deploy FE
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_APP_EMAIL}}
+      - name: Update DB on Heroku
+        run: heroku config:set
+          DB_CONNECT=${{ secrets.DB_CONNECT }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          YARN_PRODUCTION=false
+          -a ${{ secrets.HEROKU_APP_NAME }}

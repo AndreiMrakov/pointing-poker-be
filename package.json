@@ -1,0 +1,36 @@
+{
+  "name": "pointing-poker-be",
+  "version": "1.0.0",
+  "repository": "https://github.com/AndreiMrakov/pointing-poker-be.git",
+  "license": "MIT",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "node -r ts-node/register -r tsconfig-paths/register -r dist/server.js",
+    "dev": "nodemon",
+    "build": "tsc -p .",
+    "test": "jest --config=jest.config.js",
+    "heroku-prebuild": "yarn install --dev-dependencies"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5",
+    "socket.io": "^4.2.0",
+    "ts-node": "^10.2.1",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.4.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.1",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^16.7.10",
+    "jest": "^27.1.0",
+    "nodemon": "^2.0.12",
+    "ts-jest": "^27.0.5"
+  }
+}
